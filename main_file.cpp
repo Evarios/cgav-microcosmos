@@ -177,47 +177,7 @@ void freeOpenGLProgram(GLFWwindow* window) {
 
 
 void drawModel(glm::mat4 P, glm::mat4 V, glm::mat4 M) {
-	//These array should rather be placed in the myCube.h file, but I placed it here so that the full solution of the exercise is placed in a single procedure
-	float myCubeTexCoords[] = {
-		1.0f, 0.0f,	  0.0f, 1.0f,    0.0f, 0.0f,
-		1.0f, 0.0f,   1.0f, 1.0f,    0.0f, 1.0f,
-
-		1.0f, 0.0f,	  0.0f, 1.0f,    0.0f, 0.0f,
-		1.0f, 0.0f,   1.0f, 1.0f,    0.0f, 1.0f,
-
-		1.0f, 0.0f,	  0.0f, 1.0f,    0.0f, 0.0f,
-		1.0f, 0.0f,   1.0f, 1.0f,    0.0f, 1.0f,
-
-		1.0f, 0.0f,	  0.0f, 1.0f,    0.0f, 0.0f,
-		1.0f, 0.0f,   1.0f, 1.0f,    0.0f, 1.0f,
-
-		1.0f, 0.0f,	  0.0f, 1.0f,    0.0f, 0.0f,
-		1.0f, 0.0f,   1.0f, 1.0f,    0.0f, 1.0f,
-
-		1.0f, 0.0f,	  0.0f, 1.0f,    0.0f, 0.0f,
-		1.0f, 0.0f,   1.0f, 1.0f,    0.0f, 1.0f,
-	};
-
-	float myCubeNormals[] = {
-		0,0,-1,0, 0,0,-1,0, 0,0,-1,0,
-		0,0,-1,0, 0,0,-1,0, 0,0,-1,0,
-
-		0,0, 1,0, 0,0, 1,0, 0,0, 1,0,
-		0,0, 1,0, 0,0, 1,0, 0,0, 1,0,
-
-		0,-1,0,0, 0,-1,0,0, 0,-1,0,0,
-		0,-1,0,0, 0,-1,0,0, 0,-1,0,0,
-
-		0, 1,0,0, 0, 1,0,0, 0, 1,0,0,
-		0, 1,0,0, 0, 1,0,0, 0, 1,0,0,
-
-		-1,0,0,0, -1,0,0,0, -1,0,0,0,
-		-1,0,0,0, -1,0,0,0, -1,0,0,0,
-
-		1,0,0,0, 1,0,0,0, 1,0,0,0,
-		1,0,0,0, 1,0,0,0, 1,0,0,0,
-	};
-
+	
 	spLambertTextured->use();
 
 	glUniformMatrix4fv(spLambertTextured->u("P"), 1, false, glm::value_ptr(P));
