@@ -56,34 +56,6 @@ private:
 model3D::model3D(){}
 model3D::~model3D(){}
 
-class bug {
-public:
-	bug();
-	~bug();
-	void create();
-	void draw();
-	model3D body;
-	model3D upperleg, lowerleg;
-
-
-
-};
-
-bug::bug(){}
-bug::~bug(){}
-void bug::create() {
-	body.loadModel("body.model3D");
-	upperleg.loadModel("upperleg.model3D");
-	lowerleg.loadModel("lowerleg.model3D");
-}
-
-void bug::draw() {
-
-}
-
-
-bug biedronka;
-
 
 //Error processing callback procedure
 void error_callback(int error, const char* description) {
@@ -178,25 +150,6 @@ void model3D::loadModel(std::string plik) {
 	return;
 }
 
-//Initialization code procedure
-void initOpenGLProgram(GLFWwindow* window) {
-	initShaders();
-	//************Place any code here that needs to be executed once, at the program start************
-	glClearColor(0, 0, 0, 1); //Set color buffer clear color
-	glEnable(GL_DEPTH_TEST); //Turn on pixel depth test based on depth buffer
-	glfwSetKeyCallback(window, key_callback);
-	tex = readTexture("bricks.png");
-	biedronka.create();
-	
-}
-
-//Release resources allocated by the program
-void freeOpenGLProgram(GLFWwindow* window) {
-	freeShaders();
-	glDeleteTextures(1, &tex);
-	//************Place any code here that needs to be executed once, after the main loop ends************
-}
-
 
 void drawModel(glm::mat4 P, glm::mat4 V, glm::mat4 M, model3D name) {
 	
@@ -228,26 +181,37 @@ void drawModel(glm::mat4 P, glm::mat4 V, glm::mat4 M, model3D name) {
 	glDisableVertexAttribArray(spLambertTextured->a("normal"));
 }
 
+class bug {
+public:
+	bug();
+	~bug();
+	void create();
+	void draw();
+	model3D body;
+	model3D upperleg, lowerleg;
 
 
 
+};
 
-//Drawing procedure
-void drawScene(GLFWwindow* window, float angle_x, float angle_y) {
-	//************Place any code here that draws something inside the window******************l
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); //Clear color and depth buffers
+bug::bug() {}
+bug::~bug() {}
+void bug::create() {
+	body.loadModel("body.model3D");
+	upperleg.loadModel("upperleg.model3D");
+	lowerleg.loadModel("lowerleg.model3D");
+}
 
+void bug::draw() {
 	glm::mat4 M = glm::mat4(1.0f); //Initialize model matrix with abn identity matrix
-	M = glm::rotate(M, angle_y, glm::vec3(0.0f, 1.0f, 0.0f)); //Multiply model matrix by the rotation matrix around Y axis by angle_y degrees
-	M = glm::rotate(M, angle_x, glm::vec3(1.0f, 0.0f, 0.0f)); //Multiply model matrix by the rotation matrix around X axis by angle_x degrees
 
-	glm::mat4 u1 = glm::translate(M, glm::vec3(1.0f,0.2f, -0.2f));; 
-	u1 = glm::scale(u1, glm::vec3(0.1f, 0.1f, 0.1f)); 
+	glm::mat4 u1 = glm::translate(M, glm::vec3(1.0f, 0.2f, -0.2f));;
+	u1 = glm::scale(u1, glm::vec3(0.1f, 0.1f, 0.1f));
 	u1 = glm::rotate(u1, PI, glm::vec3(0.0f, 1.0f, 0.0f));
-	u1 = glm::rotate(u1, PI/6, glm::vec3(0.0f, 1.0f, 0.0f));
-	u1 = glm::rotate(u1, PI/10, glm::vec3(0.0f, 0.0f, -1.0f));
+	u1 = glm::rotate(u1, PI / 6, glm::vec3(0.0f, 1.0f, 0.0f));
+	u1 = glm::rotate(u1, PI / 10, glm::vec3(0.0f, 0.0f, -1.0f));
 
-	glm::mat4 l1 = glm::translate(u1, glm::vec3(-2.0f,0.1f,-0.35f));
+	glm::mat4 l1 = glm::translate(u1, glm::vec3(-2.0f, 0.1f, -0.35f));
 	l1 = glm::scale(l1, glm::vec3(2.0f, 2.0f, 2.0f));
 	l1 = glm::rotate(l1, PI, glm::vec3(1.0f, 1.0f, 0.0f));
 
@@ -299,22 +263,52 @@ void drawScene(GLFWwindow* window, float angle_x, float angle_y) {
 	glm::mat4 V = glm::lookAt(glm::vec3(0.0f, 0.0f, -5.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f)); //Compute view matrix
 	glm::mat4 P = glm::perspective(glm::radians(50.0f), 1.0f, 1.0f, 50.0f); //Compute projection matrix
 
-	drawModel(P, V, M, biedronka.body);
-	drawModel(P, V, u1, biedronka.upperleg);
-	drawModel(P, V, l1, biedronka.lowerleg);
-	drawModel(P, V, u2, biedronka.upperleg);
-	drawModel(P, V, l2, biedronka.lowerleg);
-	drawModel(P, V, u3, biedronka.upperleg);
-	drawModel(P, V, l3, biedronka.lowerleg);
-	drawModel(P, V, u4, biedronka.upperleg);
-	drawModel(P, V, l4, biedronka.lowerleg);
-	drawModel(P, V, u5, biedronka.upperleg);
-	drawModel(P, V, l5, biedronka.lowerleg);
-	drawModel(P, V, u6, biedronka.upperleg);
-	drawModel(P, V, l6, biedronka.lowerleg);
+	drawModel(P, V, M, this->body);
+	drawModel(P, V, u1, this->upperleg);
+	drawModel(P, V, l1, this->lowerleg);
+	drawModel(P, V, u2, this->upperleg);
+	drawModel(P, V, l2, this->lowerleg);
+	drawModel(P, V, u3, this->upperleg);
+	drawModel(P, V, l3, this->lowerleg);
+	drawModel(P, V, u4, this->upperleg);
+	drawModel(P, V, l4, this->lowerleg);
+	drawModel(P, V, u5, this->upperleg);
+	drawModel(P, V, l5, this->lowerleg);
+	drawModel(P, V, u6, this->upperleg);
+	drawModel(P, V, l6, this->lowerleg);
+}
+
+bug biedronka;
+
+//Drawing procedure
+void drawScene(GLFWwindow* window, float angle_x, float angle_y) {
+	//************Place any code here that draws something inside the window******************l
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); //Clear color and depth buffers
+
+	biedronka.draw();
 
 	glfwSwapBuffers(window); //Copy back buffer to the front buffer
 }
+
+//Initialization code procedure
+void initOpenGLProgram(GLFWwindow* window) {
+	initShaders();
+	//************Place any code here that needs to be executed once, at the program start************
+	glClearColor(0, 0, 0, 1); //Set color buffer clear color
+	glEnable(GL_DEPTH_TEST); //Turn on pixel depth test based on depth buffer
+	glfwSetKeyCallback(window, key_callback);
+	tex = readTexture("bricks.png");
+	biedronka.create();
+
+}
+
+//Release resources allocated by the program
+void freeOpenGLProgram(GLFWwindow* window) {
+	freeShaders();
+	glDeleteTextures(1, &tex);
+	//************Place any code here that needs to be executed once, after the main loop ends************
+}
+
 
 int main(void)
 {

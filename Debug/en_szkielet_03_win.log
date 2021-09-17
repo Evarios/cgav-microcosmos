@@ -1,0 +1,15 @@
+﻿  cube.cpp
+  lodepng.cpp
+  main_file.cpp
+C:\Users\janbr\OneDrive\Dokumenty\Studia\sem4\cgiv\projekt\cgav-microcosmos\main_file.cpp(157,20): warning C4018: '<': signed/unsigned mismatch
+C:\Users\janbr\OneDrive\Dokumenty\Studia\sem4\cgiv\projekt\cgav-microcosmos\main_file.cpp(169,21): warning C4018: '<': signed/unsigned mismatch
+C:\Users\janbr\OneDrive\Dokumenty\Studia\sem4\cgiv\projekt\cgav-microcosmos\main_file.cpp(173,22): warning C4018: '<': signed/unsigned mismatch
+C:\Users\janbr\OneDrive\Dokumenty\Studia\sem4\cgiv\projekt\cgav-microcosmos\main_file.cpp(355,37): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
+C:\Users\janbr\OneDrive\Dokumenty\Studia\sem4\cgiv\projekt\cgav-microcosmos\main_file.cpp(356,37): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
+  model.cpp
+  shaderprogram.cpp
+  sphere.cpp
+  teapot.cpp
+  torus.cpp
+  Generating Code...
+  en_szkielet_03_win.vcxproj -> C:\Users\janbr\OneDrive\Dokumenty\Studia\sem4\cgiv\projekt\cgav-microcosmos\Debug\en_szkielet_03_win.exe
