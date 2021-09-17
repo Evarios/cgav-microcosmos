@@ -63,12 +63,8 @@ public:
 	void create();
 	void draw();
 	model3D body;
-	model3D upperleg1, lowerleg1;
-	/*model3D upperleg2, lowerleg2;
-	model3D upperleg3, lowerleg3;
-	model3D upperleg4, lowerleg4;
-	model3D upperleg5, lowerleg5;
-	model3D upperleg6, lowerleg6;*/
+	model3D upperleg, lowerleg;
+
 
 
 };
@@ -77,18 +73,8 @@ bug::bug(){}
 bug::~bug(){}
 void bug::create() {
 	body.loadModel("body.model3D");
-	upperleg1.loadModel("upperleg.model3D");
-	lowerleg1.loadModel("lowerleg.model3D");
-	/*upperleg2.loadModel("upperleg.model3D");
-	lowerleg2.loadModel("lowerleg.model3D");
-	upperleg3.loadModel("upperleg.model3D");
-	lowerleg3.loadModel("lowerleg.model3D");
-	upperleg4.loadModel("upperleg.model3D");
-	lowerleg4.loadModel("lowerleg.model3D");
-	upperleg5.loadModel("upperleg.model3D");
-	lowerleg5.loadModel("lowerleg.model3D");
-	upperleg6.loadModel("upperleg.model3D");
-	lowerleg6.loadModel("lowerleg.model3D");*/
+	upperleg.loadModel("upperleg.model3D");
+	lowerleg.loadModel("lowerleg.model3D");
 }
 
 void bug::draw() {
@@ -97,6 +83,8 @@ void bug::draw() {
 
 
 bug biedronka;
+
+
 //Error processing callback procedure
 void error_callback(int error, const char* description) {
 	fputs(description, stderr);
@@ -312,18 +300,18 @@ void drawScene(GLFWwindow* window, float angle_x, float angle_y) {
 	glm::mat4 P = glm::perspective(glm::radians(50.0f), 1.0f, 1.0f, 50.0f); //Compute projection matrix
 
 	drawModel(P, V, M, biedronka.body);
-	drawModel(P, V, u1, biedronka.upperleg1);
-	drawModel(P, V, l1, biedronka.lowerleg1);
-	drawModel(P, V, u2, biedronka.upperleg1);
-	drawModel(P, V, l2, biedronka.lowerleg1);
-	drawModel(P, V, u3, biedronka.upperleg1);
-	drawModel(P, V, l3, biedronka.lowerleg1);
-	drawModel(P, V, u4, biedronka.upperleg1);
-	drawModel(P, V, l4, biedronka.lowerleg1);
-	drawModel(P, V, u5, biedronka.upperleg1);
-	drawModel(P, V, l5, biedronka.lowerleg1);
-	drawModel(P, V, u6, biedronka.upperleg1);
-	drawModel(P, V, l6, biedronka.lowerleg1);
+	drawModel(P, V, u1, biedronka.upperleg);
+	drawModel(P, V, l1, biedronka.lowerleg);
+	drawModel(P, V, u2, biedronka.upperleg);
+	drawModel(P, V, l2, biedronka.lowerleg);
+	drawModel(P, V, u3, biedronka.upperleg);
+	drawModel(P, V, l3, biedronka.lowerleg);
+	drawModel(P, V, u4, biedronka.upperleg);
+	drawModel(P, V, l4, biedronka.lowerleg);
+	drawModel(P, V, u5, biedronka.upperleg);
+	drawModel(P, V, l5, biedronka.lowerleg);
+	drawModel(P, V, u6, biedronka.upperleg);
+	drawModel(P, V, l6, biedronka.lowerleg);
 
 	glfwSwapBuffers(window); //Copy back buffer to the front buffer
 }
