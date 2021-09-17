@@ -37,10 +37,31 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 float speed_x = 0;//[radians/s]
 float speed_y = 0;//[radians/s]
 GLuint tex;
-std::vector<glm::vec4> verts;
-std::vector<glm::vec4> norms;
-std::vector<glm::vec2> texCoords;
-std::vector<unsigned int > indices;
+
+class model3D
+{
+public:
+	model3D();
+	~model3D();
+	std::vector<glm::vec4> verts;
+	std::vector<glm::vec4> norms;
+	std::vector<glm::vec2> texCoords;
+	std::vector<unsigned int > indices;
+	void loadModel(std::string filename);
+
+private:
+	
+};
+
+model3D::model3D()
+{
+}
+
+model3D::~model3D()
+{
+}
+model3D biedronka;
+
 //Error processing callback procedure
 void error_callback(int error, const char* description) {
 	fputs(description, stderr);
@@ -78,6 +99,7 @@ void key_callback(
 	}
 }
 
+
 GLuint readTexture(const char* filename) {
 	GLuint tex;
 	glActiveTexture(GL_TEXTURE0);
@@ -101,7 +123,7 @@ GLuint readTexture(const char* filename) {
 	return tex;
 }
 
-void loadModel(std::string plik) {
+void model3D::loadModel(std::string plik) {
 	using namespace std;
 	Assimp::Importer importer;
 	const aiScene* scene = importer.ReadFile(plik, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_GenSmoothNormals);
@@ -141,7 +163,9 @@ void initOpenGLProgram(GLFWwindow* window) {
 	glEnable(GL_DEPTH_TEST); //Turn on pixel depth test based on depth buffer
 	glfwSetKeyCallback(window, key_callback);
 	tex = readTexture("bricks.png");
-	loadModel("body.model3D");
+	biedronka.loadModel("body.model3D");
+	
+	
 }
 
 //Release resources allocated by the program
@@ -152,7 +176,7 @@ void freeOpenGLProgram(GLFWwindow* window) {
 }
 
 
-void texCube2(glm::mat4 P, glm::mat4 V, glm::mat4 M) {
+void drawModel(glm::mat4 P, glm::mat4 V, glm::mat4 M) {
 	//These array should rather be placed in the myCube.h file, but I placed it here so that the full solution of the exercise is placed in a single procedure
 	float myCubeTexCoords[] = {
 		1.0f, 0.0f,	  0.0f, 1.0f,    0.0f, 0.0f,
@@ -202,20 +226,20 @@ void texCube2(glm::mat4 P, glm::mat4 V, glm::mat4 M) {
 
 
 	glEnableVertexAttribArray(spLambertTextured->a("vertex"));
-	glVertexAttribPointer(spLambertTextured->a("vertex"), 4, GL_FLOAT, false, 0, verts.data());
+	glVertexAttribPointer(spLambertTextured->a("vertex"), 4, GL_FLOAT, false, 0, biedronka.verts.data());
 
 	glEnableVertexAttribArray(spLambertTextured->a("texCoord"));
-	glVertexAttribPointer(spLambertTextured->a("texCoord"), 2, GL_FLOAT, false, 0, texCoords.data());
+	glVertexAttribPointer(spLambertTextured->a("texCoord"), 2, GL_FLOAT, false, 0, biedronka.texCoords.data());
 
 	glEnableVertexAttribArray(spLambertTextured->a("normal"));
-	glVertexAttribPointer(spLambertTextured->a("normal"), 4, GL_FLOAT, false, 0, norms.data());
+	glVertexAttribPointer(spLambertTextured->a("normal"), 4, GL_FLOAT, false, 0, biedronka.norms.data());
 
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, tex);
 	glUniform1i(spLambertTextured->u("tex"), 0);
 
 	//glDrawArrays(GL_TRIANGLES, 0, myCubeVertexCount);
-	glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, indices.data());
+	glDrawElements(GL_TRIANGLES, biedronka.indices.size(), GL_UNSIGNED_INT, biedronka.indices.data());
 
 	glDisableVertexAttribArray(spLambertTextured->a("vertex"));
 	glDisableVertexAttribArray(spLambertTextured->a("color"));
@@ -235,7 +259,7 @@ void drawScene(GLFWwindow* window, float angle_x, float angle_y) {
 	glm::mat4 P = glm::perspective(glm::radians(50.0f), 1.0f, 1.0f, 50.0f); //Compute projection matrix
 
 
-	texCube2(P, V, M);
+	drawModel(P, V, M);
 
 	glfwSwapBuffers(window); //Copy back buffer to the front buffer
 }
