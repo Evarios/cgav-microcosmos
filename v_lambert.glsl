@@ -1,6 +1,6 @@
 #version 330
 
-//Zmienne jednorodne
+//Uniform variables
 uniform mat4 P;
 uniform mat4 V;
 uniform mat4 M;
@@ -9,12 +9,12 @@ uniform mat4 M;
 uniform vec4 color=vec4(1,1,1,1);
 uniform vec4 lightDir=vec4(0,0,1,0);
 
-//Atrybuty
-layout (location=0) in vec4 vertex; //wspolrzedne wierzcholka w przestrzeni modelu
-layout (location=1) in vec4 normal; //wektor normalny w wierzcholku
+//Attributes
+layout (location=0) in vec4 vertex; //vertex coordinates in model space
+layout (location=1) in vec4 normal; //vertex normal vector in model space
 
 
-//Zmienne interpolowane
+//varying variables
 out vec4 i_color;
 
 void main(void) {

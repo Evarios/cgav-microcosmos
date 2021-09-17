@@ -1,40 +1,36 @@
 /*
-Niniejszy program jest wolnym oprogramowaniem; możesz go
-rozprowadzać dalej i / lub modyfikować na warunkach Powszechnej
-Licencji Publicznej GNU, wydanej przez Fundację Wolnego
-Oprogramowania - według wersji 2 tej Licencji lub(według twojego
-wyboru) którejś z późniejszych wersji.
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
 
-Niniejszy program rozpowszechniany jest z nadzieją, iż będzie on
-użyteczny - jednak BEZ JAKIEJKOLWIEK GWARANCJI, nawet domyślnej
-gwarancji PRZYDATNOŚCI HANDLOWEJ albo PRZYDATNOŚCI DO OKREŚLONYCH
-ZASTOSOWAŃ.W celu uzyskania bliższych informacji sięgnij do
-Powszechnej Licencji Publicznej GNU.
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-Z pewnością wraz z niniejszym programem otrzymałeś też egzemplarz
-Powszechnej Licencji Publicznej GNU(GNU General Public License);
-jeśli nie - napisz do Free Software Foundation, Inc., 59 Temple
-Place, Fifth Floor, Boston, MA  02110 - 1301  USA
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "sphere.h"
 
 
 namespace Models {
-
+	
 	Sphere sphere;
 
 	Sphere::Sphere() {
 		buildSphere(1,12,12);
 	}
-
+	
 	Sphere::Sphere(float r,float divs1,float divs2) {
 		buildSphere(r,divs1,divs2);
 	}
-
-	Sphere::~Sphere() {
+	
+	Sphere::~Sphere() {		
 	}
-
+	
 	inline float Sphere::d2r(float deg) {
 		return PI*deg/180.0f;
 	}
@@ -54,21 +50,21 @@ namespace Models {
 	vec4 Sphere::computeFaceNormal(vector<vec4> &face) {
 		vec3 a=vec3(face[1]-face[0]);
 		vec3 b=vec3(face[2]-face[0]);
-
+		
 		return normalize(vec4(cross(b,a),0.0f));
 	}
 
 	void Sphere::generateSphereFace(vector<vec4> &vertices, vector<vec4> &vertexNormals, vec4 &faceNormal,float r,float alpha,float beta,float step_alpha,float step_beta) {
 		vertices.clear();
-		vertexNormals.clear();
-
+		vertexNormals.clear();	
+		
 		vertices.push_back(generateSpherePoint(r,alpha,beta));
 		vertices.push_back(generateSpherePoint(r,alpha+step_alpha,beta));
 		vertices.push_back(generateSpherePoint(r,alpha+step_alpha,beta+step_beta));
 		vertices.push_back(generateSpherePoint(r,alpha,beta+step_beta));
-
+		
 		faceNormal=computeFaceNormal(vertices);
-
+		
 		vertexNormals.push_back(computeVertexNormal(alpha,beta));
 		vertexNormals.push_back(computeVertexNormal(alpha+step_alpha,beta));
 		vertexNormals.push_back(computeVertexNormal(alpha+step_alpha,beta+step_beta));
@@ -85,37 +81,37 @@ namespace Models {
 		internalVertices.clear();
 		internalFaceNormals.clear();
 		internalVertexNormals.clear();
-
+			
 		float mult_alpha=180.0f/tubeDivs;
 		float mult_beta=360.0f/mainDivs;
-
-		for (int alpha=0;alpha<round(tubeDivs);alpha++) {
+		
+		for (int alpha=0;alpha<round(tubeDivs);alpha++) {			
 			for (int beta=0;beta<round(mainDivs);beta++) {
-
-				generateSphereFace(face,faceVertexNormals,normal,r,alpha*mult_alpha-90.0f,beta*mult_beta,mult_alpha, mult_beta);
-
+				
+				generateSphereFace(face,faceVertexNormals,normal,r,alpha*mult_alpha-90.0f,beta*mult_beta,mult_alpha, mult_beta);			
+				
 				internalVertices.push_back(face[0]);
 				internalVertices.push_back(face[1]);
 				internalVertices.push_back(face[2]);
-
+				
 				internalVertices.push_back(face[0]);
 				internalVertices.push_back(face[2]);
 				internalVertices.push_back(face[3]);
-
+				
 				internalVertexNormals.push_back(faceVertexNormals[0]);
 				internalVertexNormals.push_back(faceVertexNormals[1]);
 				internalVertexNormals.push_back(faceVertexNormals[2]);
-
+				
 				internalVertexNormals.push_back(faceVertexNormals[0]);
 				internalVertexNormals.push_back(faceVertexNormals[2]);
 				internalVertexNormals.push_back(faceVertexNormals[3]);
-
+							
 				for (int i=0;i<6;i++) internalFaceNormals.push_back(normal);
-
-
+				
+				
 			}
 		}
-
+		
 		vertices=(float*)internalVertices.data();
 		normals=(float*)internalFaceNormals.data();
 		vertexNormals=(float*)internalVertexNormals.data();
@@ -143,7 +139,6 @@ namespace Models {
         glDisableVertexAttribArray(1);
         glDisableVertexAttribArray(2);
         //glDisableVertexAttribArray(3);
-
 	}
 
 
