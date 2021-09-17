@@ -1,7 +1,7 @@
 ﻿  main_file.cpp
-C:\Users\MartynaKurz\Desktop\cgav-microcosmos\main_file.cpp(130,20): warning C4018: "<": niezgodność typu ze znakiem/bez znaku
-C:\Users\MartynaKurz\Desktop\cgav-microcosmos\main_file.cpp(142,21): warning C4018: "<": niezgodność typu ze znakiem/bez znaku
-C:\Users\MartynaKurz\Desktop\cgav-microcosmos\main_file.cpp(146,22): warning C4018: "<": niezgodność typu ze znakiem/bez znaku
-C:\Users\MartynaKurz\Desktop\cgav-microcosmos\main_file.cpp(353,37): warning C4244: "+=": konwersja z "double" do "float", możliwa utrata danych
-C:\Users\MartynaKurz\Desktop\cgav-microcosmos\main_file.cpp(354,37): warning C4244: "+=": konwersja z "double" do "float", możliwa utrata danych
+C:\Users\MartynaKurz\Desktop\cgav-microcosmos\main_file.cpp(129,20): warning C4018: "<": niezgodność typu ze znakiem/bez znaku
+C:\Users\MartynaKurz\Desktop\cgav-microcosmos\main_file.cpp(141,21): warning C4018: "<": niezgodność typu ze znakiem/bez znaku
+C:\Users\MartynaKurz\Desktop\cgav-microcosmos\main_file.cpp(145,22): warning C4018: "<": niezgodność typu ze znakiem/bez znaku
+C:\Users\MartynaKurz\Desktop\cgav-microcosmos\main_file.cpp(351,37): warning C4244: "+=": konwersja z "double" do "float", możliwa utrata danych
+C:\Users\MartynaKurz\Desktop\cgav-microcosmos\main_file.cpp(352,37): warning C4244: "+=": konwersja z "double" do "float", możliwa utrata danych
   en_szkielet_03_win.vcxproj -> C:\Users\MartynaKurz\Desktop\cgav-microcosmos\Debug\en_szkielet_03_win.exe

@@ -22,6 +22,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <stdlib.h>
+
 #include <stdio.h>
 #include <string>
 #include <iostream>
@@ -56,12 +57,10 @@ private:
 model3D::model3D(){}
 model3D::~model3D(){}
 
-
 //Error processing callback procedure
 void error_callback(int error, const char* description) {
 	fputs(description, stderr);
 }
-
 
 void key_callback(
 	GLFWwindow* window,
@@ -93,6 +92,7 @@ void key_callback(
 		}
 	}
 }
+
 
 
 GLuint readTexture(const char* filename) {
@@ -150,7 +150,6 @@ void model3D::loadModel(std::string plik) {
 	return;
 }
 
-
 void drawModel(glm::mat4 P, glm::mat4 V, glm::mat4 M, model3D name) {
 	
 	spLambertTextured->use();
@@ -186,12 +185,10 @@ public:
 	bug();
 	~bug();
 	void create();
-	void draw();
+	void draw(glm::mat4, glm::mat4, glm::mat4);
+private:
 	model3D body;
 	model3D upperleg, lowerleg;
-
-
-
 };
 
 bug::bug() {}
@@ -202,9 +199,7 @@ void bug::create() {
 	lowerleg.loadModel("lowerleg.model3D");
 }
 
-void bug::draw() {
-	glm::mat4 M = glm::mat4(1.0f); //Initialize model matrix with abn identity matrix
-
+void bug::draw(glm::mat4 M, glm::mat4 P, glm::mat4 V) {
 	glm::mat4 u1 = glm::translate(M, glm::vec3(1.0f, 0.2f, -0.2f));;
 	u1 = glm::scale(u1, glm::vec3(0.1f, 0.1f, 0.1f));
 	u1 = glm::rotate(u1, PI, glm::vec3(0.0f, 1.0f, 0.0f));
@@ -260,9 +255,6 @@ void bug::draw() {
 	l6 = glm::scale(l6, glm::vec3(2.0f, 2.0f, 2.0f));
 	l6 = glm::rotate(l6, PI, glm::vec3(1.0f, 1.0f, 0.0f));
 
-	glm::mat4 V = glm::lookAt(glm::vec3(0.0f, 0.0f, -5.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f)); //Compute view matrix
-	glm::mat4 P = glm::perspective(glm::radians(50.0f), 1.0f, 1.0f, 50.0f); //Compute projection matrix
-
 	drawModel(P, V, M, this->body);
 	drawModel(P, V, u1, this->upperleg);
 	drawModel(P, V, l1, this->lowerleg);
@@ -285,8 +277,19 @@ void drawScene(GLFWwindow* window, float angle_x, float angle_y) {
 	//************Place any code here that draws something inside the window******************l
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); //Clear color and depth buffers
 
-	biedronka.draw();
+	glm::mat4 V = glm::lookAt(glm::vec3(0.0f, 10.0f, -5.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f)); //Compute view matrix
+	glm::mat4 P = glm::perspective(glm::radians(50.0f), 1.0f, 1.0f, 50.0f); //Compute projection matrix
 
+
+	/*nie działa
+	for (int i = 0; i <= 5; i++) {
+		glm::mat4 M = glm::mat4(1.0f); //Initialize model matrix with abn identity matrix
+		M = glm::translate(M, glm::vec3(rand()%20 * 1.0f, rand() % 20 * 1.0f, rand() % 20 * 1.0f));
+		biedronka.draw(M, P, V);
+	}
+	*/
+	glm::mat4 M = glm::mat4(1.0f);
+	biedronka.draw(M, P, V);
 	glfwSwapBuffers(window); //Copy back buffer to the front buffer
 }
 
@@ -308,7 +311,6 @@ void freeOpenGLProgram(GLFWwindow* window) {
 	glDeleteTextures(1, &tex);
 	//************Place any code here that needs to be executed once, after the main loop ends************
 }
-
 
 int main(void)
 {
@@ -351,6 +353,7 @@ int main(void)
 		glfwSetTime(0); //clear internal timer
 		drawScene(window, angle_x, angle_y); //Execute drawing procedure
 		glfwPollEvents(); //Process callback procedures corresponding to the events that took place up to now
+		
 	}
 	freeOpenGLProgram(window);
 
