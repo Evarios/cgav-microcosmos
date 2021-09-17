@@ -53,15 +53,50 @@ private:
 	
 };
 
-model3D::model3D()
-{
+model3D::model3D(){}
+model3D::~model3D(){}
+
+class bug {
+public:
+	bug();
+	~bug();
+	void create();
+	void draw();
+	model3D body;
+	model3D upperleg1, lowerleg1;
+	/*model3D upperleg2, lowerleg2;
+	model3D upperleg3, lowerleg3;
+	model3D upperleg4, lowerleg4;
+	model3D upperleg5, lowerleg5;
+	model3D upperleg6, lowerleg6;*/
+
+
+};
+
+bug::bug(){}
+bug::~bug(){}
+void bug::create() {
+	body.loadModel("body.model3D");
+	upperleg1.loadModel("upperleg.model3D");
+	lowerleg1.loadModel("lowerleg.model3D");
+	/*upperleg2.loadModel("upperleg.model3D");
+	lowerleg2.loadModel("lowerleg.model3D");
+	upperleg3.loadModel("upperleg.model3D");
+	lowerleg3.loadModel("lowerleg.model3D");
+	upperleg4.loadModel("upperleg.model3D");
+	lowerleg4.loadModel("lowerleg.model3D");
+	upperleg5.loadModel("upperleg.model3D");
+	lowerleg5.loadModel("lowerleg.model3D");
+	upperleg6.loadModel("upperleg.model3D");
+	lowerleg6.loadModel("lowerleg.model3D");*/
 }
 
-model3D::~model3D()
-{
-}
-model3D biedronka;
+void bug::draw() {
 
+}
+
+
+bug biedronka;
 //Error processing callback procedure
 void error_callback(int error, const char* description) {
 	fputs(description, stderr);
@@ -163,8 +198,7 @@ void initOpenGLProgram(GLFWwindow* window) {
 	glEnable(GL_DEPTH_TEST); //Turn on pixel depth test based on depth buffer
 	glfwSetKeyCallback(window, key_callback);
 	tex = readTexture("bricks.png");
-	biedronka.loadModel("body.model3D");
-	
+	biedronka.create();
 	
 }
 
@@ -176,7 +210,7 @@ void freeOpenGLProgram(GLFWwindow* window) {
 }
 
 
-void drawModel(glm::mat4 P, glm::mat4 V, glm::mat4 M) {
+void drawModel(glm::mat4 P, glm::mat4 V, glm::mat4 M, model3D name) {
 	
 	spLambertTextured->use();
 
@@ -186,25 +220,28 @@ void drawModel(glm::mat4 P, glm::mat4 V, glm::mat4 M) {
 
 
 	glEnableVertexAttribArray(spLambertTextured->a("vertex"));
-	glVertexAttribPointer(spLambertTextured->a("vertex"), 4, GL_FLOAT, false, 0, biedronka.verts.data());
+	glVertexAttribPointer(spLambertTextured->a("vertex"), 4, GL_FLOAT, false, 0, name.verts.data());
 
 	glEnableVertexAttribArray(spLambertTextured->a("texCoord"));
-	glVertexAttribPointer(spLambertTextured->a("texCoord"), 2, GL_FLOAT, false, 0, biedronka.texCoords.data());
+	glVertexAttribPointer(spLambertTextured->a("texCoord"), 2, GL_FLOAT, false, 0, name.texCoords.data());
 
 	glEnableVertexAttribArray(spLambertTextured->a("normal"));
-	glVertexAttribPointer(spLambertTextured->a("normal"), 4, GL_FLOAT, false, 0, biedronka.norms.data());
+	glVertexAttribPointer(spLambertTextured->a("normal"), 4, GL_FLOAT, false, 0, name.norms.data());
 
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, tex);
 	glUniform1i(spLambertTextured->u("tex"), 0);
 
 	//glDrawArrays(GL_TRIANGLES, 0, myCubeVertexCount);
-	glDrawElements(GL_TRIANGLES, biedronka.indices.size(), GL_UNSIGNED_INT, biedronka.indices.data());
+	glDrawElements(GL_TRIANGLES, name.indices.size(), GL_UNSIGNED_INT, name.indices.data());
 
 	glDisableVertexAttribArray(spLambertTextured->a("vertex"));
 	glDisableVertexAttribArray(spLambertTextured->a("color"));
 	glDisableVertexAttribArray(spLambertTextured->a("normal"));
 }
+
+
+
 
 
 //Drawing procedure
@@ -215,11 +252,78 @@ void drawScene(GLFWwindow* window, float angle_x, float angle_y) {
 	glm::mat4 M = glm::mat4(1.0f); //Initialize model matrix with abn identity matrix
 	M = glm::rotate(M, angle_y, glm::vec3(0.0f, 1.0f, 0.0f)); //Multiply model matrix by the rotation matrix around Y axis by angle_y degrees
 	M = glm::rotate(M, angle_x, glm::vec3(1.0f, 0.0f, 0.0f)); //Multiply model matrix by the rotation matrix around X axis by angle_x degrees
+
+	glm::mat4 u1 = glm::translate(M, glm::vec3(1.0f,0.2f, -0.2f));; 
+	u1 = glm::scale(u1, glm::vec3(0.1f, 0.1f, 0.1f)); 
+	u1 = glm::rotate(u1, PI, glm::vec3(0.0f, 1.0f, 0.0f));
+	u1 = glm::rotate(u1, PI/6, glm::vec3(0.0f, 1.0f, 0.0f));
+	u1 = glm::rotate(u1, PI/10, glm::vec3(0.0f, 0.0f, -1.0f));
+
+	glm::mat4 l1 = glm::translate(u1, glm::vec3(-2.0f,0.1f,-0.35f));
+	l1 = glm::scale(l1, glm::vec3(2.0f, 2.0f, 2.0f));
+	l1 = glm::rotate(l1, PI, glm::vec3(1.0f, 1.0f, 0.0f));
+
+	glm::mat4 u2 = glm::translate(M, glm::vec3(-1.0f, 0.2f, -0.2f));;
+	u2 = glm::scale(u2, glm::vec3(0.1f, 0.1f, 0.1f));
+	u2 = glm::rotate(u2, PI / 6, glm::vec3(0.0f, -1.0f, 0.0f));
+	u2 = glm::rotate(u2, PI / 10, glm::vec3(0.0f, 0.0f, -1.0f));
+
+	glm::mat4 l2 = glm::translate(u2, glm::vec3(-2.0f, 0.1f, -0.35f));
+	l2 = glm::scale(l2, glm::vec3(2.0f, 2.0f, 2.0f));
+	l2 = glm::rotate(l2, PI, glm::vec3(1.0f, 1.0f, 0.0f));
+
+	glm::mat4 u3 = glm::translate(M, glm::vec3(1.1f, 0.2f, 0.4f));;
+	u3 = glm::scale(u3, glm::vec3(0.1f, 0.1f, 0.1f));
+	u3 = glm::rotate(u3, PI, glm::vec3(0.0f, 1.0f, 0.0f));
+	u3 = glm::rotate(u3, PI / 10, glm::vec3(0.0f, 0.0f, -1.0f));
+
+	glm::mat4 l3 = glm::translate(u3, glm::vec3(-2.0f, 0.1f, -0.35f));
+	l3 = glm::scale(l3, glm::vec3(2.0f, 2.0f, 2.0f));
+	l3 = glm::rotate(l3, PI, glm::vec3(1.0f, 1.0f, 0.0f));
+
+	glm::mat4 u4 = glm::translate(M, glm::vec3(-1.1f, 0.2f, 0.4f));;
+	u4 = glm::scale(u4, glm::vec3(0.1f, 0.1f, 0.1f));
+	u4 = glm::rotate(u4, PI / 10, glm::vec3(0.0f, 0.0f, -1.0f));
+
+	glm::mat4 l4 = glm::translate(u4, glm::vec3(-2.0f, 0.1f, -0.35f));
+	l4 = glm::scale(l4, glm::vec3(2.0f, 2.0f, 2.0f));
+	l4 = glm::rotate(l4, PI, glm::vec3(1.0f, 1.0f, 0.0f));
+
+	glm::mat4 u5 = glm::translate(M, glm::vec3(1.0f, 0.2f, 1.0f));;
+	u5 = glm::scale(u5, glm::vec3(0.1f, 0.1f, 0.1f));
+	u5 = glm::rotate(u5, PI, glm::vec3(0.0f, 1.0f, 0.0f));
+	u5 = glm::rotate(u5, PI / 6, glm::vec3(0.0f, -1.0f, 0.0f));
+	u5 = glm::rotate(u5, PI / 10, glm::vec3(0.0f, 0.0f, -1.0f));
+
+	glm::mat4 l5 = glm::translate(u5, glm::vec3(-2.0f, 0.1f, -0.35f));
+	l5 = glm::scale(l5, glm::vec3(2.0f, 2.0f, 2.0f));
+	l5 = glm::rotate(l5, PI, glm::vec3(1.0f, 1.0f, 0.0f));
+
+	glm::mat4 u6 = glm::translate(M, glm::vec3(-1.0f, 0.2f, 1.0f));;
+	u6 = glm::scale(u6, glm::vec3(0.1f, 0.1f, 0.1f));
+	u6 = glm::rotate(u6, PI / 6, glm::vec3(0.0f, 1.0f, 0.0f));
+	u6 = glm::rotate(u6, PI / 10, glm::vec3(0.0f, 0.0f, -1.0f));
+
+	glm::mat4 l6 = glm::translate(u6, glm::vec3(-2.0f, 0.1f, -0.35f));
+	l6 = glm::scale(l6, glm::vec3(2.0f, 2.0f, 2.0f));
+	l6 = glm::rotate(l6, PI, glm::vec3(1.0f, 1.0f, 0.0f));
+
 	glm::mat4 V = glm::lookAt(glm::vec3(0.0f, 0.0f, -5.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f)); //Compute view matrix
 	glm::mat4 P = glm::perspective(glm::radians(50.0f), 1.0f, 1.0f, 50.0f); //Compute projection matrix
 
-
-	drawModel(P, V, M);
+	drawModel(P, V, M, biedronka.body);
+	drawModel(P, V, u1, biedronka.upperleg1);
+	drawModel(P, V, l1, biedronka.lowerleg1);
+	drawModel(P, V, u2, biedronka.upperleg1);
+	drawModel(P, V, l2, biedronka.lowerleg1);
+	drawModel(P, V, u3, biedronka.upperleg1);
+	drawModel(P, V, l3, biedronka.lowerleg1);
+	drawModel(P, V, u4, biedronka.upperleg1);
+	drawModel(P, V, l4, biedronka.lowerleg1);
+	drawModel(P, V, u5, biedronka.upperleg1);
+	drawModel(P, V, l5, biedronka.lowerleg1);
+	drawModel(P, V, u6, biedronka.upperleg1);
+	drawModel(P, V, l6, biedronka.lowerleg1);
 
 	glfwSwapBuffers(window); //Copy back buffer to the front buffer
 }
