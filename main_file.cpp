@@ -34,9 +34,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
-
+using namespace std;
 float speed_x = 0;//[radians/s]
-float speed_y = 0;//[radians/s]
 GLuint tex;
 
 class model3D
@@ -71,23 +70,14 @@ void key_callback(
 ) {
 	if (action == GLFW_PRESS) {
 		if (key == GLFW_KEY_LEFT) {
-			speed_y = -PI;
+			speed_x = PI;
 		}
 		if (key == GLFW_KEY_RIGHT) {
-			speed_y = PI;
-		}
-		if (key == GLFW_KEY_UP) {
 			speed_x = -PI;
-		}
-		if (key == GLFW_KEY_DOWN) {
-			speed_x = PI;
 		}
 	}
 	if (action == GLFW_RELEASE) {
 		if (key == GLFW_KEY_LEFT || key == GLFW_KEY_RIGHT) {
-			speed_y = 0;
-		}
-		if (key == GLFW_KEY_UP || key == GLFW_KEY_DOWN) {
 			speed_x = 0;
 		}
 	}
@@ -343,14 +333,19 @@ int main(void)
 	initOpenGLProgram(window); //Call initialization procedure
 
 	//Main application loop
-	float camX = 0;
-	float camZ = 0;
+	float camX = 0.0f;
+	float camZ = 0.0f;
+	double timestamp = 0.0f;
 	const float radius = 10.0f;
+	const int speedFactor = 200000;
 	glfwSetTime(0); //clear internal timer
 	while (!glfwWindowShouldClose(window)) //As long as the window shouldnt be closed yet...
 	{
-		camX = sin(glfwGetTime()) * radius; //Compute camera X
-		camZ = cos(glfwGetTime()) * radius; //Compute camera Z
+		glfwSetTime(0);
+		timestamp += speed_x * glfwGetTime();
+		camX = sin(timestamp*speedFactor) * radius; //Compute camera X
+		camZ = cos(timestamp*speedFactor) * radius; //Compute camera Z
+		glfwSetTime(0);
 		drawScene(window, camX, camZ); //Execute drawing procedure
 		glfwPollEvents(); //Process callback procedures corresponding to the events that took place up to now
 		

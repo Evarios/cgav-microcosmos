@@ -1,7 +1,7 @@
 ﻿  main_file.cpp
-C:\Users\janbr\OneDrive\Dokumenty\Studia\sem4\cgiv\projekt\cgav-microcosmos\main_file.cpp(129,20): warning C4018: '<': signed/unsigned mismatch
-C:\Users\janbr\OneDrive\Dokumenty\Studia\sem4\cgiv\projekt\cgav-microcosmos\main_file.cpp(141,21): warning C4018: '<': signed/unsigned mismatch
-C:\Users\janbr\OneDrive\Dokumenty\Studia\sem4\cgiv\projekt\cgav-microcosmos\main_file.cpp(145,22): warning C4018: '<': signed/unsigned mismatch
-C:\Users\janbr\OneDrive\Dokumenty\Studia\sem4\cgiv\projekt\cgav-microcosmos\main_file.cpp(352,29): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-C:\Users\janbr\OneDrive\Dokumenty\Studia\sem4\cgiv\projekt\cgav-microcosmos\main_file.cpp(353,29): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+C:\Users\janbr\OneDrive\Dokumenty\Studia\sem4\cgiv\projekt\cgav-microcosmos\main_file.cpp(119,20): warning C4018: '<': signed/unsigned mismatch
+C:\Users\janbr\OneDrive\Dokumenty\Studia\sem4\cgiv\projekt\cgav-microcosmos\main_file.cpp(131,21): warning C4018: '<': signed/unsigned mismatch
+C:\Users\janbr\OneDrive\Dokumenty\Studia\sem4\cgiv\projekt\cgav-microcosmos\main_file.cpp(135,22): warning C4018: '<': signed/unsigned mismatch
+C:\Users\janbr\OneDrive\Dokumenty\Studia\sem4\cgiv\projekt\cgav-microcosmos\main_file.cpp(346,37): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+C:\Users\janbr\OneDrive\Dokumenty\Studia\sem4\cgiv\projekt\cgav-microcosmos\main_file.cpp(347,37): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
   en_szkielet_03_win.vcxproj -> C:\Users\janbr\OneDrive\Dokumenty\Studia\sem4\cgiv\projekt\cgav-microcosmos\Debug\en_szkielet_03_win.exe
