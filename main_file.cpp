@@ -273,11 +273,11 @@ void bug::draw(glm::mat4 M, glm::mat4 P, glm::mat4 V) {
 bug biedronka;
 
 //Drawing procedure
-void drawScene(GLFWwindow* window, float angle_x, float angle_y) {
+void drawScene(GLFWwindow* window, float camX, float camZ) {
 	//************Place any code here that draws something inside the window******************l
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); //Clear color and depth buffers
 
-	glm::mat4 V = glm::lookAt(glm::vec3(0.0f, 10.0f, -5.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f)); //Compute view matrix
+	glm::mat4 V = glm::lookAt(glm::vec3(camX, 10.0f, camZ), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f)); //Compute view matrix
 	glm::mat4 P = glm::perspective(glm::radians(50.0f), 1.0f, 1.0f, 50.0f); //Compute projection matrix
 
 
@@ -343,15 +343,15 @@ int main(void)
 	initOpenGLProgram(window); //Call initialization procedure
 
 	//Main application loop
-	float angle_x = 0; //declare variable for storing current rotation angle
-	float angle_y = 0; //declare variable for storing current rotation angle
+	float camX = 0;
+	float camZ = 0;
+	const float radius = 10.0f;
 	glfwSetTime(0); //clear internal timer
 	while (!glfwWindowShouldClose(window)) //As long as the window shouldnt be closed yet...
 	{
-		angle_x += speed_x * glfwGetTime(); //Compute an angle by which the object was rotated during the previous frame
-		angle_y += speed_y * glfwGetTime(); //Compute an angle by which the object was rotated during the previous frame
-		glfwSetTime(0); //clear internal timer
-		drawScene(window, angle_x, angle_y); //Execute drawing procedure
+		camX = sin(glfwGetTime()) * radius; //Compute camera X
+		camZ = cos(glfwGetTime()) * radius; //Compute camera Z
+		drawScene(window, camX, camZ); //Execute drawing procedure
 		glfwPollEvents(); //Process callback procedures corresponding to the events that took place up to now
 		
 	}
