@@ -34,9 +34,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
-
+using namespace std;
 float speed_x = 0;//[radians/s]
-float speed_y = 0;//[radians/s]
 GLuint tex;
 
 class model3D
@@ -71,23 +70,14 @@ void key_callback(
 ) {
 	if (action == GLFW_PRESS) {
 		if (key == GLFW_KEY_LEFT) {
-			speed_y = -PI;
+			speed_x = PI;
 		}
 		if (key == GLFW_KEY_RIGHT) {
-			speed_y = PI;
-		}
-		if (key == GLFW_KEY_UP) {
 			speed_x = -PI;
-		}
-		if (key == GLFW_KEY_DOWN) {
-			speed_x = PI;
 		}
 	}
 	if (action == GLFW_RELEASE) {
 		if (key == GLFW_KEY_LEFT || key == GLFW_KEY_RIGHT) {
-			speed_y = 0;
-		}
-		if (key == GLFW_KEY_UP || key == GLFW_KEY_DOWN) {
 			speed_x = 0;
 		}
 	}
@@ -273,11 +263,11 @@ void bug::draw(glm::mat4 M, glm::mat4 P, glm::mat4 V) {
 bug biedronka;
 
 //Drawing procedure
-void drawScene(GLFWwindow* window, float angle_x, float angle_y) {
+void drawScene(GLFWwindow* window, float camX, float camZ) {
 	//************Place any code here that draws something inside the window******************l
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); //Clear color and depth buffers
 
-	glm::mat4 V = glm::lookAt(glm::vec3(0.0f, 10.0f, -5.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f)); //Compute view matrix
+	glm::mat4 V = glm::lookAt(glm::vec3(camX, 10.0f, camZ), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f)); //Compute view matrix
 	glm::mat4 P = glm::perspective(glm::radians(50.0f), 1.0f, 1.0f, 50.0f); //Compute projection matrix
 
 
@@ -343,15 +333,20 @@ int main(void)
 	initOpenGLProgram(window); //Call initialization procedure
 
 	//Main application loop
-	float angle_x = 0; //declare variable for storing current rotation angle
-	float angle_y = 0; //declare variable for storing current rotation angle
+	float camX = 0.0f;
+	float camZ = 0.0f;
+	double timestamp = 0.0f;
+	const float radius = 10.0f;
+	const int speedFactor = 200000;
 	glfwSetTime(0); //clear internal timer
 	while (!glfwWindowShouldClose(window)) //As long as the window shouldnt be closed yet...
 	{
-		angle_x += speed_x * glfwGetTime(); //Compute an angle by which the object was rotated during the previous frame
-		angle_y += speed_y * glfwGetTime(); //Compute an angle by which the object was rotated during the previous frame
-		glfwSetTime(0); //clear internal timer
-		drawScene(window, angle_x, angle_y); //Execute drawing procedure
+		glfwSetTime(0);
+		timestamp += speed_x * glfwGetTime();
+		camX = sin(timestamp*speedFactor) * radius; //Compute camera X
+		camZ = cos(timestamp*speedFactor) * radius; //Compute camera Z
+		glfwSetTime(0);
+		drawScene(window, camX, camZ); //Execute drawing procedure
 		glfwPollEvents(); //Process callback procedures corresponding to the events that took place up to now
 		
 	}
