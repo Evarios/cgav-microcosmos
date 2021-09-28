@@ -198,6 +198,7 @@ float bug::getX() {
 	return X;
 }
 
+
 float bug::getY() {
 	return Y;
 }
@@ -289,7 +290,9 @@ void drawScene(GLFWwindow* window, float camX, float camZ) {
 
 	glm::mat4 V = glm::lookAt(glm::vec3(camX, 10.0f, camZ), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f)); //Compute view matrix
 	glm::mat4 P = glm::perspective(glm::radians(50.0f), 1.0f, 1.0f, 50.0f); //Compute projection matrix
-
+	spLambert->use();//Aktywacja programu cieniującego
+	glUniformMatrix4fv(spLambert->u("P"), 1, false, glm::value_ptr(P));
+	glUniformMatrix4fv(spLambert->u("V"), 1, false, glm::value_ptr(V));
 	glm::mat4 M = glm::mat4(1.0f);
 	for (int i = 0; i < numBug; i++) {
 		glm::mat4 Mi = glm::translate(M, glm::vec3(bugi[i].getX(), bugi[i].getY(), 0.0f));
