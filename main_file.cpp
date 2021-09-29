@@ -37,7 +37,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 using namespace std;
 float speed_x = 0;//[radians/s]
 GLuint tex;
-
+float legAngle = 0.0f;
+float legSpeed = 20.0f;
+int legDir = 1;
 
 class model3D
 {
@@ -198,10 +200,10 @@ float bug::getX() {
 	return X;
 }
 
-
 float bug::getY() {
 	return Y;
 }
+
 void bug::create() {
 	body.loadModel("body.model3D");
 	upperleg.loadModel("upperleg.model3D");
@@ -209,57 +211,75 @@ void bug::create() {
 }
 
 void bug::draw(glm::mat4 M, glm::mat4 P, glm::mat4 V) {
-
 	glm::mat4 u1 = glm::translate(M, glm::vec3(1.0f, 0.2f, -0.2f));;
 	u1 = glm::scale(u1, glm::vec3(0.1f, 0.1f, 0.1f));
 	u1 = glm::rotate(u1, PI, glm::vec3(0.0f, 1.0f, 0.0f));
 	u1 = glm::rotate(u1, PI / 6, glm::vec3(0.0f, 1.0f, 0.0f));
-	u1 = glm::rotate(u1, PI / 10, glm::vec3(0.0f, 0.0f, -1.0f));
-
-	glm::mat4 l1 = glm::translate(u1, glm::vec3(-2.0f, 0.1f, -0.35f));
-	l1 = glm::scale(l1, glm::vec3(2.0f, 2.0f, 2.0f));
-	l1 = glm::rotate(l1, PI, glm::vec3(1.0f, 1.0f, 0.0f));
 
 	glm::mat4 u2 = glm::translate(M, glm::vec3(-1.0f, 0.2f, -0.2f));;
 	u2 = glm::scale(u2, glm::vec3(0.1f, 0.1f, 0.1f));
 	u2 = glm::rotate(u2, PI / 6, glm::vec3(0.0f, -1.0f, 0.0f));
-	u2 = glm::rotate(u2, PI / 10, glm::vec3(0.0f, 0.0f, -1.0f));
-
-	glm::mat4 l2 = glm::translate(u2, glm::vec3(-2.0f, 0.1f, -0.35f));
-	l2 = glm::scale(l2, glm::vec3(2.0f, 2.0f, 2.0f));
-	l2 = glm::rotate(l2, PI, glm::vec3(1.0f, 1.0f, 0.0f));
 
 	glm::mat4 u3 = glm::translate(M, glm::vec3(1.1f, 0.2f, 0.4f));;
 	u3 = glm::scale(u3, glm::vec3(0.1f, 0.1f, 0.1f));
 	u3 = glm::rotate(u3, PI, glm::vec3(0.0f, 1.0f, 0.0f));
-	u3 = glm::rotate(u3, PI / 10, glm::vec3(0.0f, 0.0f, -1.0f));
-
-	glm::mat4 l3 = glm::translate(u3, glm::vec3(-2.0f, 0.1f, -0.35f));
-	l3 = glm::scale(l3, glm::vec3(2.0f, 2.0f, 2.0f));
-	l3 = glm::rotate(l3, PI, glm::vec3(1.0f, 1.0f, 0.0f));
 
 	glm::mat4 u4 = glm::translate(M, glm::vec3(-1.1f, 0.2f, 0.4f));;
 	u4 = glm::scale(u4, glm::vec3(0.1f, 0.1f, 0.1f));
-	u4 = glm::rotate(u4, PI / 10, glm::vec3(0.0f, 0.0f, -1.0f));
-
-	glm::mat4 l4 = glm::translate(u4, glm::vec3(-2.0f, 0.1f, -0.35f));
-	l4 = glm::scale(l4, glm::vec3(2.0f, 2.0f, 2.0f));
-	l4 = glm::rotate(l4, PI, glm::vec3(1.0f, 1.0f, 0.0f));
 
 	glm::mat4 u5 = glm::translate(M, glm::vec3(1.0f, 0.2f, 1.0f));;
 	u5 = glm::scale(u5, glm::vec3(0.1f, 0.1f, 0.1f));
 	u5 = glm::rotate(u5, PI, glm::vec3(0.0f, 1.0f, 0.0f));
 	u5 = glm::rotate(u5, PI / 6, glm::vec3(0.0f, -1.0f, 0.0f));
-	u5 = glm::rotate(u5, PI / 10, glm::vec3(0.0f, 0.0f, -1.0f));
-
-	glm::mat4 l5 = glm::translate(u5, glm::vec3(-2.0f, 0.1f, -0.35f));
-	l5 = glm::scale(l5, glm::vec3(2.0f, 2.0f, 2.0f));
-	l5 = glm::rotate(l5, PI, glm::vec3(1.0f, 1.0f, 0.0f));
 
 	glm::mat4 u6 = glm::translate(M, glm::vec3(-1.0f, 0.2f, 1.0f));;
 	u6 = glm::scale(u6, glm::vec3(0.1f, 0.1f, 0.1f));
 	u6 = glm::rotate(u6, PI / 6, glm::vec3(0.0f, 1.0f, 0.0f));
+
+	u1 = glm::rotate(u1, PI / 10, glm::vec3(0.0f, 0.0f, -1.0f));
+	u2 = glm::rotate(u2, PI / 10, glm::vec3(0.0f, 0.0f, -1.0f));
+	u3 = glm::rotate(u3, PI / 10, glm::vec3(0.0f, 0.0f, -1.0f));
+	u4 = glm::rotate(u4, PI / 10, glm::vec3(0.0f, 0.0f, -1.0f));
+	u5 = glm::rotate(u5, PI / 10, glm::vec3(0.0f, 0.0f, -1.0f));
 	u6 = glm::rotate(u6, PI / 10, glm::vec3(0.0f, 0.0f, -1.0f));
+
+	u1 = glm::rotate(u1, (legAngle * -1) * PI / 180, glm::vec3(1.0f, 1.0f, 1.0f));
+	u2 = glm::rotate(u2, legAngle * PI / 180, glm::vec3(1.0f, 1.0f, 1.0f));
+	u3 = glm::rotate(u3, (legAngle)*PI / 180, glm::vec3(1.0f, 1.0f, 1.0f));
+	if (legAngle > 7.0f || legAngle < -7.0f)
+	{
+		legAngle = 0.0f;
+		legDir = legDir * (-1);
+	}
+	u4 = glm::rotate(u4, (legAngle * -1) * PI / 180, glm::vec3(1.0f, 1.0f, 1.0f));
+	if (legAngle > 7.0f || legAngle < -7.0f)
+	{
+		legAngle = 0.0f;
+		legDir = legDir * (-1);
+	}
+	u5 = glm::rotate(u5, (legAngle * -1) * PI / 180, glm::vec3(0.0f, 0.0f, 1.0f));
+	u6 = glm::rotate(u6, legAngle * PI / 180, glm::vec3(0.0f, 0.0f, 1.0f));
+	//std::cout << "draw" << legAngle << std::endl;
+
+	glm::mat4 l1 = glm::translate(u1, glm::vec3(-2.0f, 0.1f, -0.35f));
+	l1 = glm::scale(l1, glm::vec3(2.0f, 2.0f, 2.0f));
+	l1 = glm::rotate(l1, PI, glm::vec3(1.0f, 1.0f, 0.0f));
+
+	glm::mat4 l2 = glm::translate(u2, glm::vec3(-2.0f, 0.1f, -0.35f));
+	l2 = glm::scale(l2, glm::vec3(2.0f, 2.0f, 2.0f));
+	l2 = glm::rotate(l2, PI, glm::vec3(1.0f, 1.0f, 0.0f));
+
+	glm::mat4 l3 = glm::translate(u3, glm::vec3(-2.0f, 0.1f, -0.35f));
+	l3 = glm::scale(l3, glm::vec3(2.0f, 2.0f, 2.0f));
+	l3 = glm::rotate(l3, PI, glm::vec3(1.0f, 1.0f, 0.0f));
+
+	glm::mat4 l4 = glm::translate(u4, glm::vec3(-2.0f, 0.1f, -0.35f));
+	l4 = glm::scale(l4, glm::vec3(2.0f, 2.0f, 2.0f));
+	l4 = glm::rotate(l4, PI, glm::vec3(1.0f, 1.0f, 0.0f));
+
+	glm::mat4 l5 = glm::translate(u5, glm::vec3(-2.0f, 0.1f, -0.35f));
+	l5 = glm::scale(l5, glm::vec3(2.0f, 2.0f, 2.0f));
+	l5 = glm::rotate(l5, PI, glm::vec3(1.0f, 1.0f, 0.0f));
 
 	glm::mat4 l6 = glm::translate(u6, glm::vec3(-2.0f, 0.1f, -0.35f));
 	l6 = glm::scale(l6, glm::vec3(2.0f, 2.0f, 2.0f));
@@ -283,25 +303,27 @@ void bug::draw(glm::mat4 M, glm::mat4 P, glm::mat4 V) {
 int numBug = 6;
 bug bugi[6];
 
+
 //Drawing procedure
 void drawScene(GLFWwindow* window, float camX, float camZ) {
 	//************Place any code here that draws something inside the window******************l
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); //Clear color and depth buffers
 
 	glm::mat4 V = glm::lookAt(glm::vec3(camX, 10.0f, camZ), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f)); //Compute view matrix
-	glm::mat4 P = glm::perspective(glm::radians(50.0f), 1.0f, 1.0f, 50.0f); //Compute projection matrix
+	glm::mat4 P = glm::perspective(glm::radians(500.0f), 1.0f, 1.0f, 50.0f); //Compute projection matrix
 	spLambert->use();//Aktywacja programu cieniującego
 	glUniformMatrix4fv(spLambert->u("P"), 1, false, glm::value_ptr(P));
 	glUniformMatrix4fv(spLambert->u("V"), 1, false, glm::value_ptr(V));
 	glm::mat4 M = glm::mat4(1.0f);
 	for (int i = 0; i < numBug; i++) {
 		glm::mat4 Mi = glm::translate(M, glm::vec3(bugi[i].getX(), bugi[i].getY(), 0.0f));
-		glm::scale(Mi, glm::vec3(0.1f, 0.1f, 0.1f));
+		glm::scale(Mi, glm::vec3(0.01f, 0.01f, 0.01f));
 
-		//bugi[i].draw(Mi,P,V);
-		glUniformMatrix4fv(spLambert->u("M"), 1, false, glm::value_ptr(Mi));
-		glUniform4f(spLambert->u("color"), 0, 1, 0, 1);
-		Models::sphere.drawSolid();
+		//glUniformMatrix4fv(spLambert->u("M"), 1, false, glm::value_ptr(Mi));
+		//glUniform4f(spLambert->u("color"), 0, 1, 0, 1);
+		//Models::sphere.drawSolid();
+		//
+		bugi[i].draw(Mi,P,V);
 	}
 	
 	
@@ -348,7 +370,7 @@ int main(void)
 		exit(EXIT_FAILURE);
 	}
 
-	window = glfwCreateWindow(500, 500, "OpenGL", NULL, NULL);  //Create a window 500pxx500px titled "OpenGL" and an OpenGL context associated with it. 
+	window = glfwCreateWindow(1500, 1500, "OpenGL", NULL, NULL);  //Create a window 500pxx500px titled "OpenGL" and an OpenGL context associated with it. 
 
 	if (!window) //If no window is opened then close the program
 	{
@@ -376,6 +398,7 @@ int main(void)
 	glfwSetTime(0); //clear internal timer
 	while (!glfwWindowShouldClose(window)) //As long as the window shouldnt be closed yet...
 	{
+		legAngle += (legSpeed * glfwGetTime()) * legDir;
 		glfwSetTime(0);
 		timestamp += speed_x * glfwGetTime();
 		camX = sin(timestamp*speedFactor) * radius; //Compute camera X
