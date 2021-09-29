@@ -40,6 +40,10 @@ GLuint tex;
 float legAngle = 0.0f;
 float legSpeed = 20.0f;
 int legDir = 1;
+float speed = 15.0; //speed of a bug
+float box = 20.0f; //size of a room
+float bugSize = 2.0f; //size of a bug
+
 
 class model3D
 {
@@ -178,21 +182,44 @@ public:
 	float getX();
 	float getY();
 	float getZ();
-
 	void setX(float newX);
 	void setY(float newY);
 	void setZ(float newZ);
 	void create();
 	void draw(glm::mat4, glm::mat4, glm::mat4);
+
+	float getDir();
+	void setDir(float);
+	int getID();
+	void setID(int);
+	void move();
+	void setStep();
+	float getStepX();
+	float getStepZ();
+	bool collisionWall();
+	bool collisionBug();
+	void rotate();
 private:
-	model3D body;
-	model3D upperleg, lowerleg;
+	model3D body, leg;
 	float X;
 	float Y;
 	float Z;
+	int ID;
+	float direction;
+	float stepX;
+	float stepZ;
+	float tempDistance;
 };
 
-bug::bug() {}
+bug::bug() {
+	X = 0.0f;
+	Z = 0.0f;
+	ID = 0;
+	direction = 0.0f;
+	stepX = 0.0f;
+	stepX = 0.0f;
+	tempDistance = 100.0f;
+}
 bug::~bug() {}
 
 float bug::getX() {
@@ -222,48 +249,77 @@ void bug::setZ(float newZ) {
 	return;
 }
 
+void bug::setStep() {
+	float speedX = speed * cos(direction * PI / 180);
+	float speedZ = speed * sin(direction * PI / 180);
+	//std::cout << direction << "speedZ " << speedZ << std::endl;
+	stepX = speedX * glfwGetTime() * 1.0f;
+	stepZ = speedZ * glfwGetTime() * 1.0f;
+	return;
+}
+float bug::getStepX() {
+	return stepX;
+}
+float bug::getStepZ() {
+	return stepZ;
+}
+int bug::getID() {
+	return ID;
+}
+void bug::setID(int id) {
+	ID = id;
+	return;
+}
+
+void bug::setDir(float dir) {
+	direction = dir;
+	return;
+}
+float bug::getDir() {
+	return direction;
+}
+
 void bug::create() {
 	body.loadModel("body.model3D");
-	upperleg.loadModel("upperleg.model3D");
-	lowerleg.loadModel("lowerleg.model3D");
+	leg.loadModel("leg.model3D");
 }
 
 void bug::draw(glm::mat4 M, glm::mat4 P, glm::mat4 V) {
 	glm::mat4 u1 = glm::translate(M, glm::vec3(1.0f, 0.2f, -0.2f));;
-	u1 = glm::scale(u1, glm::vec3(0.1f, 0.1f, 0.1f));
-	u1 = glm::rotate(u1, PI, glm::vec3(0.0f, 1.0f, 0.0f));
+	u1 = glm::scale(u1, glm::vec3(0.5f, 0.5f, 0.5f));
 	u1 = glm::rotate(u1, PI / 6, glm::vec3(0.0f, 1.0f, 0.0f));
 
 	glm::mat4 u2 = glm::translate(M, glm::vec3(-1.0f, 0.2f, -0.2f));;
-	u2 = glm::scale(u2, glm::vec3(0.1f, 0.1f, 0.1f));
+	u2 = glm::scale(u2, glm::vec3(0.5f, 0.5f, 0.5f));
+	u2 = glm::rotate(u2, PI, glm::vec3(0.0f, 1.0f, 0.0f));
 	u2 = glm::rotate(u2, PI / 6, glm::vec3(0.0f, -1.0f, 0.0f));
 
 	glm::mat4 u3 = glm::translate(M, glm::vec3(1.1f, 0.2f, 0.4f));;
-	u3 = glm::scale(u3, glm::vec3(0.1f, 0.1f, 0.1f));
-	u3 = glm::rotate(u3, PI, glm::vec3(0.0f, 1.0f, 0.0f));
+	u3 = glm::scale(u3, glm::vec3(0.5f, 0.5f, 0.5f));
 
 	glm::mat4 u4 = glm::translate(M, glm::vec3(-1.1f, 0.2f, 0.4f));;
-	u4 = glm::scale(u4, glm::vec3(0.1f, 0.1f, 0.1f));
+	u4 = glm::scale(u4, glm::vec3(0.5f, 0.5f, 0.5f));
+	u4 = glm::rotate(u4, PI, glm::vec3(0.0f, 1.0f, 0.0f));
 
 	glm::mat4 u5 = glm::translate(M, glm::vec3(1.0f, 0.2f, 1.0f));;
-	u5 = glm::scale(u5, glm::vec3(0.1f, 0.1f, 0.1f));
-	u5 = glm::rotate(u5, PI, glm::vec3(0.0f, 1.0f, 0.0f));
+	u5 = glm::scale(u5, glm::vec3(0.5f, 0.5f, 0.5f));
 	u5 = glm::rotate(u5, PI / 6, glm::vec3(0.0f, -1.0f, 0.0f));
 
 	glm::mat4 u6 = glm::translate(M, glm::vec3(-1.0f, 0.2f, 1.0f));;
-	u6 = glm::scale(u6, glm::vec3(0.1f, 0.1f, 0.1f));
+	u6 = glm::scale(u6, glm::vec3(0.5f, 0.5f, 0.5f));
+	u6 = glm::rotate(u6, PI, glm::vec3(0.0f, 1.0f, 0.0f));
 	u6 = glm::rotate(u6, PI / 6, glm::vec3(0.0f, 1.0f, 0.0f));
 
-	u1 = glm::rotate(u1, PI / 10, glm::vec3(0.0f, 0.0f, -1.0f));
-	u2 = glm::rotate(u2, PI / 10, glm::vec3(0.0f, 0.0f, -1.0f));
-	u3 = glm::rotate(u3, PI / 10, glm::vec3(0.0f, 0.0f, -1.0f));
-	u4 = glm::rotate(u4, PI / 10, glm::vec3(0.0f, 0.0f, -1.0f));
-	u5 = glm::rotate(u5, PI / 10, glm::vec3(0.0f, 0.0f, -1.0f));
-	u6 = glm::rotate(u6, PI / 10, glm::vec3(0.0f, 0.0f, -1.0f));
+	u1 = glm::rotate(u1, PI / 10, glm::vec3(0.0f, 0.0f, 1.0f));
+	u2 = glm::rotate(u2, PI / 10, glm::vec3(0.0f, 0.0f, 1.0f));
+	u3 = glm::rotate(u3, PI / 10, glm::vec3(0.0f, 0.0f, 1.0f));
+	u4 = glm::rotate(u4, PI / 10, glm::vec3(0.0f, 0.0f, 1.0f));
+	u5 = glm::rotate(u5, PI / 10, glm::vec3(0.0f, 0.0f, 1.0f));
+	u6 = glm::rotate(u6, PI / 10, glm::vec3(0.0f, 0.0f, 1.0f));
 
 	u1 = glm::rotate(u1, (legAngle * -1) * PI / 180, glm::vec3(1.0f, 1.0f, 1.0f));
 	u2 = glm::rotate(u2, legAngle * PI / 180, glm::vec3(1.0f, 1.0f, 1.0f));
-	u3 = glm::rotate(u3, (legAngle)*PI / 180, glm::vec3(1.0f, 1.0f, 1.0f));
+	u3 = glm::rotate(u3, legAngle * PI / 180, glm::vec3(1.0f, 1.0f, 1.0f));
 	if (legAngle > 7.0f || legAngle < -7.0f)
 	{
 		legAngle = 0.0f;
@@ -277,51 +333,94 @@ void bug::draw(glm::mat4 M, glm::mat4 P, glm::mat4 V) {
 	}
 	u5 = glm::rotate(u5, (legAngle * -1) * PI / 180, glm::vec3(0.0f, 0.0f, 1.0f));
 	u6 = glm::rotate(u6, legAngle * PI / 180, glm::vec3(0.0f, 0.0f, 1.0f));
-	//std::cout << "draw" << legAngle << std::endl;
-
-	glm::mat4 l1 = glm::translate(u1, glm::vec3(-2.0f, 0.1f, -0.35f));
-	l1 = glm::scale(l1, glm::vec3(2.0f, 2.0f, 2.0f));
-	l1 = glm::rotate(l1, PI, glm::vec3(1.0f, 1.0f, 0.0f));
-
-	glm::mat4 l2 = glm::translate(u2, glm::vec3(-2.0f, 0.1f, -0.35f));
-	l2 = glm::scale(l2, glm::vec3(2.0f, 2.0f, 2.0f));
-	l2 = glm::rotate(l2, PI, glm::vec3(1.0f, 1.0f, 0.0f));
-
-	glm::mat4 l3 = glm::translate(u3, glm::vec3(-2.0f, 0.1f, -0.35f));
-	l3 = glm::scale(l3, glm::vec3(2.0f, 2.0f, 2.0f));
-	l3 = glm::rotate(l3, PI, glm::vec3(1.0f, 1.0f, 0.0f));
-
-	glm::mat4 l4 = glm::translate(u4, glm::vec3(-2.0f, 0.1f, -0.35f));
-	l4 = glm::scale(l4, glm::vec3(2.0f, 2.0f, 2.0f));
-	l4 = glm::rotate(l4, PI, glm::vec3(1.0f, 1.0f, 0.0f));
-
-	glm::mat4 l5 = glm::translate(u5, glm::vec3(-2.0f, 0.1f, -0.35f));
-	l5 = glm::scale(l5, glm::vec3(2.0f, 2.0f, 2.0f));
-	l5 = glm::rotate(l5, PI, glm::vec3(1.0f, 1.0f, 0.0f));
-
-	glm::mat4 l6 = glm::translate(u6, glm::vec3(-2.0f, 0.1f, -0.35f));
-	l6 = glm::scale(l6, glm::vec3(2.0f, 2.0f, 2.0f));
-	l6 = glm::rotate(l6, PI, glm::vec3(1.0f, 1.0f, 0.0f));
 
 	drawModel(P, V, M, this->body);
-	drawModel(P, V, u1, this->upperleg);
-	drawModel(P, V, l1, this->lowerleg);
-	drawModel(P, V, u2, this->upperleg);
-	drawModel(P, V, l2, this->lowerleg);
-	drawModel(P, V, u3, this->upperleg);
-	drawModel(P, V, l3, this->lowerleg);
-	drawModel(P, V, u4, this->upperleg);
-	drawModel(P, V, l4, this->lowerleg);
-	drawModel(P, V, u5, this->upperleg);
-	drawModel(P, V, l5, this->lowerleg);
-	drawModel(P, V, u6, this->upperleg);
-	drawModel(P, V, l6, this->lowerleg);
+	drawModel(P, V, u1, this->leg);
+	drawModel(P, V, u2, this->leg);
+	drawModel(P, V, u3, this->leg);
+	drawModel(P, V, u4, this->leg);
+	drawModel(P, V, u5, this->leg);
+	drawModel(P, V, u6, this->leg);
+}
+void bug::move()
+{
+	this->setStep();
+	//std::cout << stepX << " " << stepZ << std::endl;
+	if (direction >= 0 && direction <= 90)
+	{
+		float temp = direction / 90.0f;
+		X += (1 - temp) * stepX;
+		Z += temp * stepZ;
+	}
+	else if (direction > 90 && direction < 180)
+	{
+		float temp = (direction - 90) / 90.0f;
+		X += temp * stepX;
+		Z += (1 - temp) * stepZ;
+	}
+	else if (direction >= 180 && direction <= 270)
+	{
+		float temp = (direction - 180) / 90.0f;
+		X += (1 - temp) * stepX;
+		Z += temp * stepZ;
+	}
+	else if (direction > 270 && direction < 360)
+	{
+		float temp = (direction - 270) / 90.0f;
+		X += temp * stepX;
+		Z += (1 - temp) * stepZ;
+	}
+	return;
+}
+
+bool bug::collisionWall() {
+	if (X >= box && (direction >= 315 || direction <= 45)) {
+		return true;
+	}
+	else if (X <= -1 * box && (direction >= 135 && direction <= 225)) {
+		return true;
+	}
+	else if (Z >= box && (direction >= 45 && direction <= 135)) {
+		return true;
+	}
+	else if (Z <= -1 * box && (direction >= 225 && direction <= 315)) {
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
+int numBug = 7;
+bug bugi[7];
+
+float distance(bug a, bug b) {
+	float absx = abs(a.getX() - b.getX());
+	float absz = abs(a.getZ() - b.getZ());
+	float dist2 = absx * absx + absz * absz;
+	float dist = sqrt(dist2);
+	return dist;
+}
+
+bool bug::collisionBug() {
+	bool col = false;
+	for (int i = 0; i < numBug; i++) {
+		float dist = distance(*this, bugi[i]);
+		if (this->getID() != bugi[i].getID() && dist <= bugSize) {
+			if (dist > tempDistance) {
+				col = false;
+				tempDistance = 100.0f;
+			}
+			else {
+				col = true;
+				tempDistance = dist;
+			}
+		}
+	}
+	return col;
 }
 
 bug biedronka;
-int numBug = 6;
-bug bugi[6];
-
 
 //Drawing procedure
 void drawScene(GLFWwindow* window, float camX, float camZ) {
@@ -339,7 +438,6 @@ void drawScene(GLFWwindow* window, float camX, float camZ) {
 		//glm::scale(Mi, glm::vec3(0.1f, 0.1f, 0.1f));
 
 		bugi[i].draw(Mi,P,V);
-
 	}
 	glfwSwapBuffers(window); //Copy back buffer to the front buffer
 }
@@ -354,13 +452,15 @@ void initOpenGLProgram(GLFWwindow* window) {
 	tex = readTexture("bricks.png");
 	for (int i = 0; i < numBug; i++) {
 		bugi[i].create();
-		float x = rand() % 20 * 1.0f;
-		float z = rand() % 20 * 1.0f;
+		float x = rand() % 10 * 2.0f;
+		float z = rand() % 10 * 2.0f;
+		float dir = rand() % 360 * 1.0f;
+		bugi[i].setDir(dir);
+		bugi[i].setID(i + 1);
 		if (i % 4 == 0) {
 			bugi[i].setX(-1 * x);
 			bugi[i].setZ(-1 * z);
 		}
-
 		else if (i % 4 == 1) {
 			bugi[i].setX(x);
 			bugi[i].setZ(-1 * z);
@@ -374,7 +474,6 @@ void initOpenGLProgram(GLFWwindow* window) {
 			bugi[i].setZ(z);
 		}
 	}
-
 }
 
 //Release resources allocated by the program
@@ -424,6 +523,32 @@ int main(void)
 	while (!glfwWindowShouldClose(window)) //As long as the window shouldnt be closed yet...
 	{
 		legAngle += (legSpeed * glfwGetTime()) * legDir;
+		for (int i = 0; i < numBug; i++)
+		{
+			if (bugi[i].collisionWall() == true) {
+				float dir = bugi[i].getDir();
+				if (dir >= 180.0f) {
+					bugi[i].setDir(dir - 180.0f);
+				}
+				else {
+					bugi[i].setDir(dir + 180.0f);
+				}
+				bugi[i].move();
+			}
+			else if (bugi[i].collisionBug() == true) {
+				float dir = bugi[i].getDir();
+				if (dir >= 180.0f) {
+					bugi[i].setDir(dir - 180.0f);
+				}
+				else {
+					bugi[i].setDir(dir + 180.0f);
+				}
+				bugi[i].move();
+			}
+			else {
+				bugi[i].move();
+			}
+		}
 		glfwSetTime(0);
 		timestamp += speed_x * glfwGetTime();
 		camX = sin(timestamp*speedFactor) * radius; //Compute camera X
