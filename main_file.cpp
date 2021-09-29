@@ -86,8 +86,6 @@ void key_callback(
 	}
 }
 
-
-
 GLuint readTexture(const char* filename) {
 	GLuint tex;
 	glActiveTexture(GL_TEXTURE0);
@@ -176,7 +174,6 @@ void drawModel(glm::mat4 P, glm::mat4 V, glm::mat4 M, model3D name) {
 class bug {
 public:
 	bug();
-	bug(float, float);
 	~bug();
 	float getX();
 	float getY();
@@ -197,10 +194,6 @@ private:
 
 bug::bug() {}
 bug::~bug() {}
-bug::bug(float x, float y) {
-	X = x;
-	Y = y;
-}
 
 float bug::getX() {
 	return X;
@@ -228,7 +221,6 @@ void bug::setZ(float newZ) {
 	Z = newZ;
 	return;
 }
-
 
 void bug::create() {
 	body.loadModel("body.model3D");
@@ -337,7 +329,7 @@ void drawScene(GLFWwindow* window, float camX, float camZ) {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); //Clear color and depth buffers
 
 	glm::mat4 V = glm::lookAt(glm::vec3(camX, 10.0f, camZ), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f)); //Compute view matrix
-	glm::mat4 P = glm::perspective(glm::radians(500.0f), 1.0f, 1.0f, 50.0f); //Compute projection matrix
+	glm::mat4 P = glm::perspective(glm::radians(500.0f), 1.0f, 1.0f, 20.0f); //Compute projection matrix
 	spLambert->use();//Aktywacja programu cieniującego
 	glUniformMatrix4fv(spLambert->u("P"), 1, false, glm::value_ptr(P));
 	glUniformMatrix4fv(spLambert->u("V"), 1, false, glm::value_ptr(V));
