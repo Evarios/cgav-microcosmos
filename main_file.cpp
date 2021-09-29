@@ -178,6 +178,11 @@ public:
 	~bug();
 	float getX();
 	float getY();
+	float getZ();
+
+	void setX(float newX);
+	void setY(float newY);
+	void setZ(float newZ);
 	void create();
 	void draw(glm::mat4, glm::mat4, glm::mat4);
 private:
@@ -185,6 +190,7 @@ private:
 	model3D upperleg, lowerleg;
 	float X;
 	float Y;
+	float Z;
 };
 
 bug::bug() {}
@@ -202,6 +208,27 @@ float bug::getX() {
 float bug::getY() {
 	return Y;
 }
+
+float bug::getZ() {
+	return Z;
+}
+
+void bug::setX(float newX) {
+	X = newX;
+	return;
+}
+
+void bug::setY(float newY) {
+	Y = newY;
+	return;
+}
+
+void bug::setZ(float newZ) {
+	Z = newZ;
+	return;
+}
+
+
 void bug::create() {
 	body.loadModel("body.model3D");
 	upperleg.loadModel("upperleg.model3D");
@@ -280,6 +307,7 @@ void bug::draw(glm::mat4 M, glm::mat4 P, glm::mat4 V) {
 	drawModel(P, V, l6, this->lowerleg);
 }
 
+bug biedronka;
 int numBug = 6;
 bug bugi[6];
 
@@ -295,17 +323,12 @@ void drawScene(GLFWwindow* window, float camX, float camZ) {
 	glUniformMatrix4fv(spLambert->u("V"), 1, false, glm::value_ptr(V));
 	glm::mat4 M = glm::mat4(1.0f);
 	for (int i = 0; i < numBug; i++) {
-		glm::mat4 Mi = glm::translate(M, glm::vec3(bugi[i].getX(), bugi[i].getY(), 0.0f));
-		glm::scale(Mi, glm::vec3(0.1f, 0.1f, 0.1f));
+		glm::mat4 Mi = glm::translate(M, glm::vec3(bugi[i].getX(),0.0f, bugi[i].getZ()));
+		//glm::scale(Mi, glm::vec3(0.1f, 0.1f, 0.1f));
 
-		//bugi[i].draw(Mi,P,V);
-		glUniformMatrix4fv(spLambert->u("M"), 1, false, glm::value_ptr(Mi));
-		glUniform4f(spLambert->u("color"), 0, 1, 0, 1);
-		Models::sphere.drawSolid();
+		bugi[i].draw(Mi,P,V);
+
 	}
-	
-	
-	//biedronka.draw(M, P, V);
 	glfwSwapBuffers(window); //Copy back buffer to the front buffer
 }
 
@@ -317,15 +340,27 @@ void initOpenGLProgram(GLFWwindow* window) {
 	glEnable(GL_DEPTH_TEST); //Turn on pixel depth test based on depth buffer
 	glfwSetKeyCallback(window, key_callback);
 	tex = readTexture("bricks.png");
-	
 	for (int i = 0; i < numBug; i++) {
 		bugi[i].create();
 		float x = rand() % 20 * 1.0f;
-		float y = rand() % 20 * 1.0f;
-		if (i % 4 == 0)	bugi[i] = bug(-1 * x, -1 * y);
-		else if (i % 4 == 1)	bugi[i] = bug(x, -1 * y);
-		else if (i % 4 == 2)	bugi[i] = bug(-1 * x, y);
-		else if (i % 4 == 3)	bugi[i] = bug(x, y);
+		float z = rand() % 20 * 1.0f;
+		if (i % 4 == 0) {
+			bugi[i].setX(-1 * x);
+			bugi[i].setZ(-1 * z);
+		}
+
+		else if (i % 4 == 1) {
+			bugi[i].setX(x);
+			bugi[i].setZ(-1 * z);
+		}
+		else if (i % 4 == 2) {
+			bugi[i].setX(-1 * x);
+			bugi[i].setZ(z);
+		}
+		else if (i % 4 == 3) {
+			bugi[i].setX(x);
+			bugi[i].setZ(z);
+		}
 	}
 
 }
