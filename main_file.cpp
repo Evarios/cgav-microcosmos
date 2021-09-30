@@ -27,10 +27,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include <string>
 #include <iostream>
 #include "constants.h"
-#include "allmodels.h"
 #include "lodepng.h"
 #include "shaderprogram.h"
-#include "myCube.h"
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
@@ -198,7 +196,7 @@ public:
 	float getStepZ();
 	bool collisionWall();
 	bool collisionBug();
-	void rotate();
+	void setRotate(bool);
 private:
 	model3D body, leg;
 	float X;
@@ -209,6 +207,7 @@ private:
 	float stepX;
 	float stepZ;
 	float tempDistance;
+	bool rotate;
 };
 
 bug::bug() {
@@ -219,8 +218,14 @@ bug::bug() {
 	stepX = 0.0f;
 	stepX = 0.0f;
 	tempDistance = 100.0f;
+	rotate = false;
 }
 bug::~bug() {}
+
+void bug::setRotate(bool rot) {
+	rotate = rot;
+	return;
+}
 
 float bug::getX() {
 	return X;
@@ -252,7 +257,6 @@ void bug::setZ(float newZ) {
 void bug::setStep() {
 	float speedX = speed * cos(direction * PI / 180);
 	float speedZ = speed * sin(direction * PI / 180);
-	//std::cout << direction << "speedZ " << speedZ << std::endl;
 	stepX = speedX * glfwGetTime() * 1.0f;
 	stepZ = speedZ * glfwGetTime() * 1.0f;
 	return;
@@ -285,30 +289,27 @@ void bug::create() {
 }
 
 void bug::draw(glm::mat4 M, glm::mat4 P, glm::mat4 V) {
-	glm::mat4 u1 = glm::translate(M, glm::vec3(1.0f, 0.2f, -0.2f));;
-	u1 = glm::scale(u1, glm::vec3(0.5f, 0.5f, 0.5f));
+	M = glm::rotate(M, glm::radians(direction), glm::vec3(0.0f, 1.0f, 0.0f));
+	if (rotate == true) {
+		M = glm::rotate(M, PI, glm::vec3(0.0f, 1.0f, 0.0f));
+		rotate = false;
+	}
+	glm::mat4 u1 = glm::translate(M, glm::vec3(1.0f, 0.2f, -0.2f));
 	u1 = glm::rotate(u1, PI / 6, glm::vec3(0.0f, 1.0f, 0.0f));
 
-	glm::mat4 u2 = glm::translate(M, glm::vec3(-1.0f, 0.2f, -0.2f));;
-	u2 = glm::scale(u2, glm::vec3(0.5f, 0.5f, 0.5f));
-	u2 = glm::rotate(u2, PI, glm::vec3(0.0f, 1.0f, 0.0f));
-	u2 = glm::rotate(u2, PI / 6, glm::vec3(0.0f, -1.0f, 0.0f));
+	glm::mat4 u2 = glm::translate(M, glm::vec3(-1.0f, 0.2f, -0.2f));
+	u2 = glm::rotate(u2, 5 * PI / 6, glm::vec3(0.0f, 1.0f, 0.0f));
 
-	glm::mat4 u3 = glm::translate(M, glm::vec3(1.1f, 0.2f, 0.4f));;
-	u3 = glm::scale(u3, glm::vec3(0.5f, 0.5f, 0.5f));
+	glm::mat4 u3 = glm::translate(M, glm::vec3(1.1f, 0.2f, 0.4f));
 
-	glm::mat4 u4 = glm::translate(M, glm::vec3(-1.1f, 0.2f, 0.4f));;
-	u4 = glm::scale(u4, glm::vec3(0.5f, 0.5f, 0.5f));
+	glm::mat4 u4 = glm::translate(M, glm::vec3(-1.1f, 0.2f, 0.4f));
 	u4 = glm::rotate(u4, PI, glm::vec3(0.0f, 1.0f, 0.0f));
 
-	glm::mat4 u5 = glm::translate(M, glm::vec3(1.0f, 0.2f, 1.0f));;
-	u5 = glm::scale(u5, glm::vec3(0.5f, 0.5f, 0.5f));
+	glm::mat4 u5 = glm::translate(M, glm::vec3(1.0f, 0.2f, 1.0f));
 	u5 = glm::rotate(u5, PI / 6, glm::vec3(0.0f, -1.0f, 0.0f));
 
-	glm::mat4 u6 = glm::translate(M, glm::vec3(-1.0f, 0.2f, 1.0f));;
-	u6 = glm::scale(u6, glm::vec3(0.5f, 0.5f, 0.5f));
-	u6 = glm::rotate(u6, PI, glm::vec3(0.0f, 1.0f, 0.0f));
-	u6 = glm::rotate(u6, PI / 6, glm::vec3(0.0f, 1.0f, 0.0f));
+	glm::mat4 u6 = glm::translate(M, glm::vec3(-1.0f, 0.2f, 1.0f));
+	u6 = glm::rotate(u6, 7 * PI / 6, glm::vec3(0.0f, 1.0f, 0.0f));
 
 	u1 = glm::rotate(u1, PI / 10, glm::vec3(0.0f, 0.0f, 1.0f));
 	u2 = glm::rotate(u2, PI / 10, glm::vec3(0.0f, 0.0f, 1.0f));
@@ -316,24 +317,24 @@ void bug::draw(glm::mat4 M, glm::mat4 P, glm::mat4 V) {
 	u4 = glm::rotate(u4, PI / 10, glm::vec3(0.0f, 0.0f, 1.0f));
 	u5 = glm::rotate(u5, PI / 10, glm::vec3(0.0f, 0.0f, 1.0f));
 	u6 = glm::rotate(u6, PI / 10, glm::vec3(0.0f, 0.0f, 1.0f));
-
-	u1 = glm::rotate(u1, (legAngle * -1) * PI / 180, glm::vec3(1.0f, 1.0f, 1.0f));
-	u2 = glm::rotate(u2, legAngle * PI / 180, glm::vec3(1.0f, 1.0f, 1.0f));
-	u3 = glm::rotate(u3, legAngle * PI / 180, glm::vec3(1.0f, 1.0f, 1.0f));
+/*
+	u1 = glm::rotate(u1, glm::radians(legAngle * -1), glm::vec3(1.0f, 1.0f, 1.0f));
+	u2 = glm::rotate(u2, glm::radians(legAngle), glm::vec3(1.0f, 1.0f, 1.0f));
+	u3 = glm::rotate(u3, glm::radians(legAngle), glm::vec3(1.0f, 1.0f, 1.0f));
 	if (legAngle > 7.0f || legAngle < -7.0f)
 	{
 		legAngle = 0.0f;
 		legDir = legDir * (-1);
 	}
-	u4 = glm::rotate(u4, (legAngle * -1) * PI / 180, glm::vec3(1.0f, 1.0f, 1.0f));
+	u4 = glm::rotate(u4, glm::radians(legAngle * -1), glm::vec3(1.0f, 1.0f, 1.0f));
 	if (legAngle > 7.0f || legAngle < -7.0f)
 	{
 		legAngle = 0.0f;
 		legDir = legDir * (-1);
 	}
-	u5 = glm::rotate(u5, (legAngle * -1) * PI / 180, glm::vec3(0.0f, 0.0f, 1.0f));
-	u6 = glm::rotate(u6, legAngle * PI / 180, glm::vec3(0.0f, 0.0f, 1.0f));
-
+	u5 = glm::rotate(u5, glm::radians(legAngle * -1), glm::vec3(0.0f, 0.0f, 1.0f));
+	u6 = glm::rotate(u6, glm::radians(legAngle), glm::vec3(0.0f, 0.0f, 1.0f));
+	*/
 	drawModel(P, V, M, this->body);
 	drawModel(P, V, u1, this->leg);
 	drawModel(P, V, u2, this->leg);
@@ -428,7 +429,7 @@ void drawScene(GLFWwindow* window, float camX, float camZ) {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); //Clear color and depth buffers
 
 	glm::mat4 V = glm::lookAt(glm::vec3(camX, 10.0f, camZ), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f)); //Compute view matrix
-	glm::mat4 P = glm::perspective(glm::radians(500.0f), 1.0f, 1.0f, 20.0f); //Compute projection matrix
+	glm::mat4 P = glm::perspective(glm::radians(500.0f), 1.0f, 1.0f, 200.0f); //Compute projection matrix
 	spLambert->use();//Aktywacja programu cieniującego
 	glUniformMatrix4fv(spLambert->u("P"), 1, false, glm::value_ptr(P));
 	glUniformMatrix4fv(spLambert->u("V"), 1, false, glm::value_ptr(V));
@@ -533,6 +534,7 @@ int main(void)
 				else {
 					bugi[i].setDir(dir + 180.0f);
 				}
+				bugi[i].setRotate(true);
 				bugi[i].move();
 			}
 			else if (bugi[i].collisionBug() == true) {
