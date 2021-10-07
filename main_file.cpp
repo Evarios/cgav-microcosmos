@@ -15,6 +15,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
 #define GLM_FORCE_RADIANS
+#define GLM_FORCE_SWIZZLE
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -39,9 +40,17 @@ float legAngle = 0.0f;
 float legSpeed = 20.0f;
 int legDir = 1;
 float speed = 15.0; //speed of a bug
-float box = 20.0f; //size of a room
+float box = 10.0f; //size of a room
 float bugSize = 2.0f; //size of a bug
+float aspectRatio = 1;
+ShaderProgram* sp;
 
+
+const GLfloat quadVertices[] = { -10.0f, 0.0f, 10.0f,
+		10.0f, 0.0f, 10.0f,
+		10.0f,0.0f, -10.0f,
+		-10.0f,0.0f, -10.0f
+};
 
 class model3D
 {
@@ -86,6 +95,12 @@ void key_callback(
 			speed_x = 0;
 		}
 	}
+}
+
+void windowResizeCallback(GLFWwindow* window, int width, int height) {
+	if (height == 0) return;
+	aspectRatio = (float)width / (float)height;
+	glViewport(0, 0, width, height);
 }
 
 GLuint readTexture(const char* filename) {
@@ -145,32 +160,30 @@ void model3D::loadModel(std::string plik) {
 
 void drawModel(glm::mat4 P, glm::mat4 V, glm::mat4 M, model3D name) {
 	
-	spLambertTextured->use();
-
-	glUniformMatrix4fv(spLambertTextured->u("P"), 1, false, glm::value_ptr(P));
-	glUniformMatrix4fv(spLambertTextured->u("V"), 1, false, glm::value_ptr(V));
-	glUniformMatrix4fv(spLambertTextured->u("M"), 1, false, glm::value_ptr(M));
+	glUniformMatrix4fv(sp->u("P"), 1, false, glm::value_ptr(P));
+	glUniformMatrix4fv(sp->u("V"), 1, false, glm::value_ptr(V));
+	glUniformMatrix4fv(sp->u("M"), 1, false, glm::value_ptr(M));
 
 
-	glEnableVertexAttribArray(spLambertTextured->a("vertex"));
-	glVertexAttribPointer(spLambertTextured->a("vertex"), 4, GL_FLOAT, false, 0, name.verts.data());
+	glEnableVertexAttribArray(sp->a("vertex"));
+	glVertexAttribPointer(sp->a("vertex"), 4, GL_FLOAT, false, 0, name.verts.data());
 
-	glEnableVertexAttribArray(spLambertTextured->a("texCoord"));
-	glVertexAttribPointer(spLambertTextured->a("texCoord"), 2, GL_FLOAT, false, 0, name.texCoords.data());
+	glEnableVertexAttribArray(sp->a("texCoord0"));
+	glVertexAttribPointer(sp->a("texCoord0"), 2, GL_FLOAT, false, 0, name.texCoords.data());
 
-	glEnableVertexAttribArray(spLambertTextured->a("normal"));
-	glVertexAttribPointer(spLambertTextured->a("normal"), 4, GL_FLOAT, false, 0, name.norms.data());
+	glEnableVertexAttribArray(sp->a("normal"));
+	glVertexAttribPointer(sp->a("normal"), 4, GL_FLOAT, false, 0, name.norms.data());
 
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, tex);
-	glUniform1i(spLambertTextured->u("tex"), 0);
+	glUniform1i(sp->u("tex"), 0);
 
 	//glDrawArrays(GL_TRIANGLES, 0, myCubeVertexCount);
 	glDrawElements(GL_TRIANGLES, name.indices.size(), GL_UNSIGNED_INT, name.indices.data());
 
-	glDisableVertexAttribArray(spLambertTextured->a("vertex"));
-	glDisableVertexAttribArray(spLambertTextured->a("color"));
-	glDisableVertexAttribArray(spLambertTextured->a("normal"));
+	glDisableVertexAttribArray(sp->a("vertex"));
+	glDisableVertexAttribArray(sp->a("texCoord"));
+	glDisableVertexAttribArray(sp->a("normal"));
 }
 
 class bug {
@@ -392,8 +405,8 @@ bool bug::collisionWall() {
 	}
 }
 
-int numBug = 7;
-bug bugi[7];
+const int numBug = 1;
+bug bugi[numBug];
 
 float distance(bug a, bug b) {
 	float absx = abs(a.getX() - b.getX());
@@ -428,28 +441,38 @@ void drawScene(GLFWwindow* window, float camX, float camZ) {
 	//************Place any code here that draws something inside the window******************l
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); //Clear color and depth buffers
 
-	glm::mat4 V = glm::lookAt(glm::vec3(camX, 10.0f, camZ), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f)); //Compute view matrix
-	glm::mat4 P = glm::perspective(glm::radians(500.0f), 1.0f, 1.0f, 200.0f); //Compute projection matrix
-	spLambert->use();//Aktywacja programu cieniującego
-	glUniformMatrix4fv(spLambert->u("P"), 1, false, glm::value_ptr(P));
-	glUniformMatrix4fv(spLambert->u("V"), 1, false, glm::value_ptr(V));
+	glm::mat4 V = glm::lookAt(glm::vec3(camX, 40.0f, camZ), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f)); //Compute view matrix
+	glm::mat4 P = glm::perspective(glm::radians(50.0f), 1.0f, 1.0f, 50.0f); //Compute projection matrix
+	sp->use();//Aktywacja programu cieniującego
 	glm::mat4 M = glm::mat4(1.0f);
+	glUniformMatrix4fv(sp->u("P"), 1, false, glm::value_ptr(P));
+	glUniformMatrix4fv(sp->u("V"), 1, false, glm::value_ptr(V));
+	//glUniformMatrix4fv(sp->u("M"), 1, false, glm::value_ptr(M));
+	glUniform4f(sp->u("lp1"), 0, 5, 0, 1);
+	glUniform4f(sp->u("lp1"), 0, 0, 6, 1);
+	/*glEnableVertexAttribArray(sp->a("vertex"));
+	glVertexAttribPointer(sp->a("vertex"), 3, GL_FLOAT, false, 0, quadVertices);
+	glDrawArrays(GL_QUADS, 0, 4);
+	glDisableVertexAttribArray(sp->a("vertex"));*/
 	for (int i = 0; i < numBug; i++) {
 		glm::mat4 Mi = glm::translate(M, glm::vec3(bugi[i].getX(),0.0f, bugi[i].getZ()));
 		//glm::scale(Mi, glm::vec3(0.1f, 0.1f, 0.1f));
 
 		bugi[i].draw(Mi,P,V);
 	}
+	
+
 	glfwSwapBuffers(window); //Copy back buffer to the front buffer
 }
 
 //Initialization code procedure
 void initOpenGLProgram(GLFWwindow* window) {
-	initShaders();
 	//************Place any code here that needs to be executed once, at the program start************
 	glClearColor(0, 0, 0, 1); //Set color buffer clear color
 	glEnable(GL_DEPTH_TEST); //Turn on pixel depth test based on depth buffer
 	glfwSetKeyCallback(window, key_callback);
+	glfwSetWindowSizeCallback(window, windowResizeCallback);
+	sp = new ShaderProgram("v_simplest.glsl", NULL, "f_simplest.glsl");
 	tex = readTexture("bricks.png");
 	for (int i = 0; i < numBug; i++) {
 		bugi[i].create();
@@ -479,8 +502,8 @@ void initOpenGLProgram(GLFWwindow* window) {
 
 //Release resources allocated by the program
 void freeOpenGLProgram(GLFWwindow* window) {
-	freeShaders();
 	glDeleteTextures(1, &tex);
+	delete sp;
 	//************Place any code here that needs to be executed once, after the main loop ends************
 }
 
