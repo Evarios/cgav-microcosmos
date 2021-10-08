@@ -36,15 +36,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 using namespace std;
 float speed_x = 0;//[radians/s]
 GLuint tex;
+GLuint texBiedronka;
 float legAngle = 0.0f;
 float legSpeed = 20.0f;
 int legDir = 1;
-float speed = 15.0; //speed of a bug
+float speed = 15.0f; //speed of a bug
 float box = 10.0f; //size of a room
 float bugSize = 2.0f; //size of a bug
 float aspectRatio = 1;
 ShaderProgram* sp;
-
 
 const GLfloat quadVertices[] = { -10.0f, 0.0f, 10.0f,
 		10.0f, 0.0f, 10.0f,
@@ -158,7 +158,7 @@ void model3D::loadModel(std::string plik) {
 	return;
 }
 
-void drawModel(glm::mat4 P, glm::mat4 V, glm::mat4 M, model3D name) {
+void drawModel(glm::mat4 P, glm::mat4 V, glm::mat4 M, model3D name, GLuint tex) {
 	
 	glUniformMatrix4fv(sp->u("P"), 1, false, glm::value_ptr(P));
 	glUniformMatrix4fv(sp->u("V"), 1, false, glm::value_ptr(V));
@@ -182,7 +182,7 @@ void drawModel(glm::mat4 P, glm::mat4 V, glm::mat4 M, model3D name) {
 	glDrawElements(GL_TRIANGLES, name.indices.size(), GL_UNSIGNED_INT, name.indices.data());
 
 	glDisableVertexAttribArray(sp->a("vertex"));
-	glDisableVertexAttribArray(sp->a("texCoord"));
+	glDisableVertexAttribArray(sp->a("texCoord0"));
 	glDisableVertexAttribArray(sp->a("normal"));
 }
 
@@ -348,13 +348,13 @@ void bug::draw(glm::mat4 M, glm::mat4 P, glm::mat4 V) {
 	u5 = glm::rotate(u5, glm::radians(legAngle * -1), glm::vec3(0.0f, 0.0f, 1.0f));
 	u6 = glm::rotate(u6, glm::radians(legAngle), glm::vec3(0.0f, 0.0f, 1.0f));
 	*/
-	drawModel(P, V, M, this->body);
-	drawModel(P, V, u1, this->leg);
-	drawModel(P, V, u2, this->leg);
-	drawModel(P, V, u3, this->leg);
-	drawModel(P, V, u4, this->leg);
-	drawModel(P, V, u5, this->leg);
-	drawModel(P, V, u6, this->leg);
+	drawModel(P, V, M, this->body, texBiedronka);
+	drawModel(P, V, u1, this->leg, texBiedronka);
+	drawModel(P, V, u2, this->leg, texBiedronka);
+	drawModel(P, V, u3, this->leg, texBiedronka);
+	drawModel(P, V, u4, this->leg, texBiedronka);
+	drawModel(P, V, u5, this->leg, texBiedronka);
+	drawModel(P, V, u6, this->leg, texBiedronka);
 }
 void bug::move()
 {
@@ -405,8 +405,9 @@ bool bug::collisionWall() {
 	}
 }
 
-const int numBug = 1;
+const int numBug = 3;
 bug bugi[numBug];
+model3D podloga;
 
 float distance(bug a, bug b) {
 	float absx = abs(a.getX() - b.getX());
@@ -433,8 +434,9 @@ bool bug::collisionBug() {
 	}
 	return col;
 }
+void drawPodloga() {
 
-bug biedronka;
+}
 
 //Drawing procedure
 void drawScene(GLFWwindow* window, float camX, float camZ) {
@@ -442,18 +444,15 @@ void drawScene(GLFWwindow* window, float camX, float camZ) {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); //Clear color and depth buffers
 
 	glm::mat4 V = glm::lookAt(glm::vec3(camX, 40.0f, camZ), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f)); //Compute view matrix
-	glm::mat4 P = glm::perspective(glm::radians(50.0f), 1.0f, 1.0f, 50.0f); //Compute projection matrix
+	glm::mat4 P = glm::perspective(glm::radians(50.0f), 1.0f, 1.0f, 80.0f); //Compute projection matrix
 	sp->use();//Aktywacja programu cieniującego
 	glm::mat4 M = glm::mat4(1.0f);
 	glUniformMatrix4fv(sp->u("P"), 1, false, glm::value_ptr(P));
 	glUniformMatrix4fv(sp->u("V"), 1, false, glm::value_ptr(V));
-	//glUniformMatrix4fv(sp->u("M"), 1, false, glm::value_ptr(M));
+	glUniformMatrix4fv(sp->u("M"), 1, false, glm::value_ptr(M));
 	glUniform4f(sp->u("lp1"), 0, 5, 0, 1);
-	glUniform4f(sp->u("lp1"), 0, 0, 6, 1);
-	/*glEnableVertexAttribArray(sp->a("vertex"));
-	glVertexAttribPointer(sp->a("vertex"), 3, GL_FLOAT, false, 0, quadVertices);
-	glDrawArrays(GL_QUADS, 0, 4);
-	glDisableVertexAttribArray(sp->a("vertex"));*/
+	glUniform4f(sp->u("lp1"), 0, 0, 6, 1);	
+	drawModel(P, V, M, podloga, tex);
 	for (int i = 0; i < numBug; i++) {
 		glm::mat4 Mi = glm::translate(M, glm::vec3(bugi[i].getX(),0.0f, bugi[i].getZ()));
 		//glm::scale(Mi, glm::vec3(0.1f, 0.1f, 0.1f));
@@ -474,6 +473,8 @@ void initOpenGLProgram(GLFWwindow* window) {
 	glfwSetWindowSizeCallback(window, windowResizeCallback);
 	sp = new ShaderProgram("v_simplest.glsl", NULL, "f_simplest.glsl");
 	tex = readTexture("bricks.png");
+	texBiedronka = readTexture("biedronka.png");
+	podloga.loadModel("kwadrat.model3d");
 	for (int i = 0; i < numBug; i++) {
 		bugi[i].create();
 		float x = rand() % 10 * 2.0f;
@@ -541,7 +542,7 @@ int main(void)
 	float camX = 0.0f;
 	float camZ = 0.0f;
 	double timestamp = 0.0f;
-	const float radius = 10.0f;
+	const float radius = 20.0f;
 	const int speedFactor = 200000;
 	glfwSetTime(0); //clear internal timer
 	while (!glfwWindowShouldClose(window)) //As long as the window shouldnt be closed yet...
