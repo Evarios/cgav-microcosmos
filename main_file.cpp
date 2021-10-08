@@ -42,7 +42,7 @@ float legSpeed = 20.0f;
 int legDir = 1;
 float speed = 15.0f; //speed of a bug
 float box = 10.0f; //size of a room
-float bugSize = 2.0f; //size of a bug
+float bugSize = 3.0f; //size of a bug
 float aspectRatio = 1;
 ShaderProgram* sp;
 
@@ -210,6 +210,8 @@ public:
 	bool collisionWall();
 	bool collisionBug();
 	void setRotate(bool);
+	bool getStart();
+	void setStart(bool);
 private:
 	model3D body, leg;
 	float X;
@@ -221,6 +223,7 @@ private:
 	float stepZ;
 	float tempDistance;
 	bool rotate;
+	bool start;
 };
 
 bug::bug() {
@@ -232,9 +235,16 @@ bug::bug() {
 	stepX = 0.0f;
 	tempDistance = 100.0f;
 	rotate = false;
+	start = true;
 }
 bug::~bug() {}
 
+bool bug::getStart() {
+	return start;
+}
+void bug::setStart(bool s) {
+	start = s;
+}
 void bug::setRotate(bool rot) {
 	rotate = rot;
 	return;
@@ -302,7 +312,7 @@ void bug::create() {
 }
 
 void bug::draw(glm::mat4 M, glm::mat4 P, glm::mat4 V) {
-	M = glm::rotate(M, glm::radians(direction), glm::vec3(0.0f, 1.0f, 0.0f));
+	
 	if (rotate == true) {
 		M = glm::rotate(M, PI, glm::vec3(0.0f, 1.0f, 0.0f));
 		rotate = false;
@@ -456,7 +466,10 @@ void drawScene(GLFWwindow* window, float camX, float camZ) {
 	for (int i = 0; i < numBug; i++) {
 		glm::mat4 Mi = glm::translate(M, glm::vec3(bugi[i].getX(),0.0f, bugi[i].getZ()));
 		//glm::scale(Mi, glm::vec3(0.1f, 0.1f, 0.1f));
-
+		if (bugi[i].getStart() == true) {
+			Mi = glm::rotate(Mi, glm::radians(bugi[i].getDir()), glm::vec3(0.0f, 1.0f, 0.0f));
+			bugi[i].setStart(false);
+		}
 		bugi[i].draw(Mi,P,V);
 	}
 	
